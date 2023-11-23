@@ -4,6 +4,7 @@
 #include "Characters/AGPlayerCharacter.h"
 
 #include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
 AAGPlayerCharacter::AAGPlayerCharacter()
@@ -16,4 +17,8 @@ AAGPlayerCharacter::AAGPlayerCharacter()
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Main Camera"));
 	PlayerCamera->SetupAttachment(SpringArm);
 	PlayerCamera->bUsePawnControlRotation = false;
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	bUseControllerRotationYaw = false;
 }
