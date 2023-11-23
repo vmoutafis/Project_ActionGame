@@ -34,5 +34,8 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category=Character)
 	bool IsInAir;
+
+	UPROPERTY(BlueprintReadOnly, Category=Pawn)
+	float Direction;
 	
 };

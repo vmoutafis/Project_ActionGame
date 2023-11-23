@@ -3,6 +3,7 @@
 
 #include "AnimInstances/AGAnimInstance.h"
 
+#include "KismetAnimationLibrary.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/PawnMovementComponent.h"
 
@@ -25,6 +26,8 @@ void UAGAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	SpeedXY = VelocityXY.Length();
 
 	SpeedZ = TryGetPawnOwner()->GetVelocity().Z;
+
+	Direction = UKismetAnimationLibrary::CalculateDirection(TryGetPawnOwner()->GetVelocity(), TryGetPawnOwner()->GetActorRotation());
 
 	if (const ACharacter* CharRef = Cast<ACharacter>(TryGetPawnOwner()))
 	{

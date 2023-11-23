@@ -8,6 +8,15 @@
 #include "InputMappingContext.h"
 #include "Characters/AGPlayerCharacter.h"
 
+AAGPlayerController::AAGPlayerController()
+{
+	MovementInputVector = FVector2D();
+
+	IA_Camera = nullptr;
+	IA_Movement = nullptr;
+	PlayerRef = nullptr;
+}
+
 void AAGPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
@@ -23,7 +32,12 @@ void AAGPlayerController::SetupInputComponent()
 
 			if (!IMC_Camera.IsNull())
 			{
-				InputSystem->AddMappingContext(IMC_Camera.LoadSynchronous(), 0);
+				InputSystem->AddMappingContext(IMC_Camera.LoadSynchronous(), 1);
+			}
+
+			if (!IMC_Combat.IsNull())
+			{
+				InputSystem->AddMappingContext(IMC_Combat.LoadSynchronous(), 2);
 			}
 		}
 	}
@@ -32,6 +46,7 @@ void AAGPlayerController::SetupInputComponent()
 
 	Input->BindAction(IA_Movement, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleMovement);
 	Input->BindAction(IA_Camera, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleCamera);
+	Input->BindAction(IA_BasicAttack, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleBasicAttack);
 }
 
 void AAGPlayerController::OnPossess(APawn* InPawn)
@@ -51,6 +66,9 @@ void AAGPlayerController::HandleMovement(const FInputActionInstance& Action)
 
 	PlayerRef->AddMovementInput(RotYaw.Vector(), Axis.X);
 	PlayerRef->AddMovementInput(RotYaw.RotateVector(FVector::RightVector), Axis.Y);
+
+	MovementInputVector.X = Axis.X;
+	MovementInputVector.Y = Axis.Y;
 }
 
 void AAGPlayerController::HandleCamera(const FInputActionInstance& Action)
@@ -59,4 +77,14 @@ void AAGPlayerController::HandleCamera(const FInputActionInstance& Action)
 
 	AddYawInput(Axis.X);
 	AddPitchInput(-Axis.Y);
+}
+
+void AAGPlayerController::HandleBasicAttack(const FInputActionInstance& Action)
+{
+	const bool bPressed = Action.GetValue().Get<bool>();
+
+	if (!bPressed || !IsValid(PlayerRef))
+		return;
+
+	PlayerRef->TryBasicAttack();
 }

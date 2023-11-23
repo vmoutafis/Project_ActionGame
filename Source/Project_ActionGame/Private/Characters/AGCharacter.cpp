@@ -25,10 +25,3 @@ void AAGCharacter::Tick(float DeltaTime)
 
 }
 
-// Called to bind functionality to input
-void AAGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-
