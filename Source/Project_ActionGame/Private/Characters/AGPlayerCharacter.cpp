@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Weapons/AGWeapon.h"
 
 AAGPlayerCharacter::AAGPlayerCharacter()
 {
@@ -17,7 +18,12 @@ AAGPlayerCharacter::AAGPlayerCharacter()
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Main Camera"));
 	PlayerCamera->SetupAttachment(SpringArm);
 	PlayerCamera->bUsePawnControlRotation = false;
-	
+
+	WeaponSocketName = FName("Socket_Weapon");
+	Weapon = CreateDefaultSubobject<UChildActorComponent>(TEXT("Player Weapon"));
+	Weapon->SetChildActorClass(StartingWeaponClass);
+	Weapon->SetupAttachment(GetMesh(), WeaponSocketName);
+
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	bUseControllerRotationYaw = false;

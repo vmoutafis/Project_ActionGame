@@ -6,6 +6,7 @@
 #include "Characters/AGCharacter.h"
 #include "AGPlayerCharacter.generated.h"
 
+class AAGWeapon;
 class UTimelineComponent;
 class UCameraComponent;
 class USpringArmComponent;
@@ -45,15 +46,25 @@ private:
 	// Cancels the LerpActorRotation timer
 	void CancelActorRotationLerp();
 
-protected:
-	UPROPERTY(EditDefaultsOnly, Category=Components)
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
 	USpringArmComponent* SpringArm;
 
-	UPROPERTY(EditDefaultsOnly, Category=Components)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
 	UCameraComponent* PlayerCamera;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
+	UChildActorComponent* Weapon;
+	
+protected:
 	UPROPERTY(EditDefaultsOnly, Category="Player|Animations")
 	TArray<UAnimMontage*> BasicAttackAnims;
+
+	UPROPERTY(EditDefaultsOnly, Category="Player|Weapon")
+	TSubclassOf<AAGWeapon> StartingWeaponClass;
+
+	UPROPERTY(EditDefaultsOnly, Category="Player|Weapon")
+	FName WeaponSocketName;
 
 	int BasicAttackCombo;
 
