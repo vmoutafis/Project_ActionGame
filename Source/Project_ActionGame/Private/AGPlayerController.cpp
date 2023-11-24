@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "Characters/AGPlayerCharacter.h"
+#include "UserWidgets/AGPlayerHUDWidget.h"
 
 AAGPlayerController::AAGPlayerController()
 {
@@ -26,19 +27,16 @@ void AAGPlayerController::SetupInputComponent()
 		if (UEnhancedInputLocalPlayerSubsystem* InputSystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
 		{
 			if (!IMC_Locomotion.IsNull())
-			{
 				InputSystem->AddMappingContext(IMC_Locomotion.LoadSynchronous(), 0);
-			}
 
 			if (!IMC_Camera.IsNull())
-			{
 				InputSystem->AddMappingContext(IMC_Camera.LoadSynchronous(), 1);
-			}
 
 			if (!IMC_Combat.IsNull())
-			{
 				InputSystem->AddMappingContext(IMC_Combat.LoadSynchronous(), 2);
-			}
+
+			if (!IMC_Interact.IsNull())
+				InputSystem->AddMappingContext(IMC_Interact.LoadSynchronous(), 3);
 		}
 	}
 	
@@ -48,6 +46,7 @@ void AAGPlayerController::SetupInputComponent()
 	Input->BindAction(IA_Camera, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleCamera);
 	Input->BindAction(IA_BasicAttack, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleBasicAttack);
 	Input->BindAction(IA_ToggleSheath, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleWeaponSheath);
+	Input->BindAction(IA_Interact, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleInteract);
 }
 
 void AAGPlayerController::OnPossess(APawn* InPawn)
@@ -55,6 +54,11 @@ void AAGPlayerController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	PlayerRef = Cast<AAGPlayerCharacter>(GetPawn());
+
+	if (!IsValid(PlayerHUD))
+		PlayerHUD = CreateWidget<UAGPlayerHUDWidget>(this, PlayerHUDClass);
+
+	PlayerHUD->AddToPlayerScreen();
 }
 
 void AAGPlayerController::HandleMovement(const FInputActionInstance& Action)
@@ -95,8 +99,15 @@ void AAGPlayerController::HandleWeaponSheath(const FInputActionInstance& Action)
 	if (!IsValid(PlayerRef))
 		return;
 	
-	const bool bPressed = Action.GetValue().Get<bool>();
-
-	if (bPressed)
+	if (const bool bPressed = Action.GetValue().Get<bool>())
 		PlayerRef->ToggleSheath();
+}
+
+void AAGPlayerController::HandleInteract(const FInputActionInstance& Action)
+{
+	if (!IsValid(PlayerRef))
+		return;
+	
+	if (const bool bPressed = Action.GetValue().Get<bool>())
+		PlayerRef->TryInteract();
 }

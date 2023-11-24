@@ -6,6 +6,7 @@
 #include "Characters/AGCharacter.h"
 #include "AGPlayerCharacter.generated.h"
 
+class USphereComponent;
 class AAGWeapon;
 class UTimelineComponent;
 class UCameraComponent;
@@ -21,10 +22,25 @@ class PROJECT_ACTIONGAME_API AAGPlayerCharacter : public AAGCharacter
 public:
 	AAGPlayerCharacter();
 
+	virtual void BeginPlay() override;
+
+	bool TryInteract();
+	
+protected:
+	UFUNCTION()
+	void OnLootColliderOverlaped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnLootColliderEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
 	USpringArmComponent* SpringArm;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
 	UCameraComponent* PlayerCamera;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
+	USphereComponent* LootCollider;
 };

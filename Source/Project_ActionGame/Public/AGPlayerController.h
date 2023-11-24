@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "AGPlayerController.generated.h"
 
+class UAGPlayerHUDWidget;
 class AAGPlayerCharacter;
 class UInputMappingContext;
 struct FInputActionInstance;
@@ -39,6 +40,8 @@ private:
 	void HandleBasicAttack(const FInputActionInstance& Action);
 
 	void HandleWeaponSheath(const FInputActionInstance& Action);
+	
+	void HandleInteract(const FInputActionInstance& Action);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="Input|IMC")
@@ -49,6 +52,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Input|IMC")
 	TSoftObjectPtr<UInputMappingContext> IMC_Combat;
+
+	UPROPERTY(EditDefaultsOnly, Category="Input|IMC")
+	TSoftObjectPtr<UInputMappingContext> IMC_Interact;
 
 	UPROPERTY(EditDefaultsOnly, Category="Input|Actions")
 	UInputAction* IA_Movement;
@@ -62,9 +68,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Input|Actions")
 	UInputAction* IA_ToggleSheath;
 
+	UPROPERTY(EditDefaultsOnly, Category="Input|Actions")
+	UInputAction* IA_Interact;
+
 	UPROPERTY()
 	AAGPlayerCharacter* PlayerRef;
 
 	FVector2D MovementInputVector;
+
+	UPROPERTY(EditDefaultsOnly, Category="UI|HUD")
+	TSubclassOf<UAGPlayerHUDWidget> PlayerHUDClass;
+
+	UPROPERTY()
+	UAGPlayerHUDWidget* PlayerHUD;
 	
 };
