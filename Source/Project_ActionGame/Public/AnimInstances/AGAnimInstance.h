@@ -19,6 +19,9 @@ public:
 	
 	virtual void NativeThreadSafeUpdateAnimation(float DeltaSeconds) override;
 
+	UFUNCTION(BlueprintCallable, Category="Character|Weapon")
+	void SwitchWeaponSheath(bool Unsheath);
+
 protected:
 	UPROPERTY(BlueprintReadOnly, Category=Pawn)
 	float SpeedXY;
@@ -37,5 +40,8 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category=Pawn)
 	float Direction;
+
+	UPROPERTY(BlueprintReadOnly, Category=Pawn)
+	bool bIsWeaponUnsheathed;
 	
 };

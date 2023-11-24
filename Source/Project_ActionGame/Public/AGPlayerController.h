@@ -37,7 +37,9 @@ private:
 	void HandleCamera(const FInputActionInstance& Action);
 
 	void HandleBasicAttack(const FInputActionInstance& Action);
-	
+
+	void HandleWeaponSheath(const FInputActionInstance& Action);
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="Input|IMC")
 	TSoftObjectPtr<UInputMappingContext> IMC_Locomotion;
@@ -56,6 +58,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Input|Actions")
 	UInputAction* IA_BasicAttack;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Input|Actions")
+	UInputAction* IA_ToggleSheath;
 
 	UPROPERTY()
 	AAGPlayerCharacter* PlayerRef;

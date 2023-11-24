@@ -47,6 +47,7 @@ void AAGPlayerController::SetupInputComponent()
 	Input->BindAction(IA_Movement, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleMovement);
 	Input->BindAction(IA_Camera, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleCamera);
 	Input->BindAction(IA_BasicAttack, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleBasicAttack);
+	Input->BindAction(IA_ToggleSheath, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleWeaponSheath);
 }
 
 void AAGPlayerController::OnPossess(APawn* InPawn)
@@ -87,4 +88,15 @@ void AAGPlayerController::HandleBasicAttack(const FInputActionInstance& Action)
 		return;
 
 	PlayerRef->TryBasicAttack();
+}
+
+void AAGPlayerController::HandleWeaponSheath(const FInputActionInstance& Action)
+{
+	if (!IsValid(PlayerRef))
+		return;
+	
+	const bool bPressed = Action.GetValue().Get<bool>();
+
+	if (bPressed)
+		PlayerRef->ToggleSheath();
 }

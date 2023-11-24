@@ -23,10 +23,10 @@ public:
 	virtual void NativeThreadSafeUpdateAnimation(float DeltaSeconds) override;
 
 protected:
-	UFUNCTION(BlueprintCallable, Category="Player")
+	UFUNCTION(BlueprintCallable, Category="Player|Attack")
 	void AttackComplete() const;
 
-	UFUNCTION(BlueprintCallable, Category="Player")
+	UFUNCTION(BlueprintCallable, Category="Player|Attack")
 	void ResetCombo() const;
 	
 protected:

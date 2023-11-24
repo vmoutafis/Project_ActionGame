@@ -3,6 +3,7 @@
 
 #include "Weapons/AGWeapon.h"
 
+#include "Characters/AGPlayerCharacter.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -15,10 +16,13 @@ AAGWeapon::AAGWeapon()
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon Mesh"));
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetRootComponent(WeaponMesh);
 	
 	DamageCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Damage Collision"));
+	DamageCollision->SetupAttachment(WeaponMesh);
 	DamageCollision->SetBoxExtent(FVector(50.0f, 50.0f, 50.0f));
 	DamageCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	DamageCollision->SetUseCCD(true);
 }
 
 void AAGWeapon::InitialiseWeapon(AActor* ParentOwner, const float& WeaponDamage)

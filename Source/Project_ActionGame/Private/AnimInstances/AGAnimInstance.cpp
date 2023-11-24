@@ -4,6 +4,7 @@
 #include "AnimInstances/AGAnimInstance.h"
 
 #include "KismetAnimationLibrary.h"
+#include "Characters/AGCharacter.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/PawnMovementComponent.h"
 
@@ -11,6 +12,7 @@ UAGAnimInstance::UAGAnimInstance()
 {
 	Speed = SpeedXY = SpeedZ =  0.0f;
 	IsFalling = IsInAir = false;
+	bIsWeaponUnsheathed = false;
 }
 
 void UAGAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
@@ -28,16 +30,28 @@ void UAGAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	SpeedZ = TryGetPawnOwner()->GetVelocity().Z;
 
 	Direction = UKismetAnimationLibrary::CalculateDirection(TryGetPawnOwner()->GetVelocity(), TryGetPawnOwner()->GetActorRotation());
-
-	if (const ACharacter* CharRef = Cast<ACharacter>(TryGetPawnOwner()))
+	
+	if (const AAGCharacter* CharRef = Cast<AAGCharacter>(TryGetPawnOwner()))
 	{
 		IsFalling = CharRef->GetMovementComponent()->IsFalling();
 		IsInAir = CharRef->GetMovementComponent()->IsFalling();
+
+		bIsWeaponUnsheathed = CharRef->IsWeaponUnsheathed();
 	}
 	else
 	{
 		IsFalling = SpeedZ < 0.0f;
 		IsInAir = SpeedZ != 0.0f;
 	}
-	
+}
+
+void UAGAnimInstance::SwitchWeaponSheath(bool Unsheath)
+{
+	if (AAGCharacter* CharRef = Cast<AAGCharacter>(TryGetPawnOwner()))
+	{
+		if (std::move(Unsheath))
+			CharRef->AttachWeaponToHand();
+		else
+			CharRef->AttachWeaponToSheath();
+	}
 }
