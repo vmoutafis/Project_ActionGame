@@ -46,3 +46,40 @@ struct FInventoryItem
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TEnumAsByte<EItemRarity> Rarity;
 };
+
+USTRUCT(BlueprintType)
+struct FInventorySlot
+{
+	GENERATED_BODY()
+
+	FInventorySlot()
+	{
+		bIsEmpty = true;
+		Item = FInventoryItem();
+	}
+
+	FInventorySlot(const FInventorySlot& Other)
+	{
+		bIsEmpty = Other.bIsEmpty;
+		Item = Other.Item;
+	}
+
+	FInventorySlot(const FInventoryItem& DefaultItem)
+	{
+		bIsEmpty = false;
+		Item = DefaultItem;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void Clear()
+	{
+		bIsEmpty = true;
+		Item = FInventoryItem();
+	}
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bIsEmpty;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FInventoryItem Item;
+};

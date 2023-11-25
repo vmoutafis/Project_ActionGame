@@ -28,12 +28,16 @@ public:
 	virtual void NativePreConstruct() override;
 
 protected:
+	UFUNCTION()
 	void OnPressed();
 
+	UFUNCTION()
 	void OnReleased();
 
+	UFUNCTION()
 	void OnHovered();
 
+	UFUNCTION()
 	void OnUnHovered();
 	
 public:
