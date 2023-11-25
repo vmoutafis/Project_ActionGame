@@ -3,6 +3,7 @@
 
 #include "Weapons/AGWeapon.h"
 
+#include "AGCustomObjectTraceChannels.h"
 #include "Characters/AGPlayerCharacter.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -23,6 +24,10 @@ AAGWeapon::AAGWeapon()
 	DamageCollision->SetBoxExtent(FVector(50.0f, 50.0f, 50.0f));
 	DamageCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	DamageCollision->SetUseCCD(true);
+	DamageCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	DamageCollision->SetCollisionResponseToChannel(ECC_Enemy, ECR_Overlap);
+	DamageCollision->SetCollisionResponseToChannel(ECC_Player, ECR_Overlap);
+	DamageCollision->SetCollisionResponseToChannel(ECC_NPC, ECR_Overlap);
 }
 
 void AAGWeapon::InitialiseWeapon(AActor* ParentOwner, const float& WeaponDamage)

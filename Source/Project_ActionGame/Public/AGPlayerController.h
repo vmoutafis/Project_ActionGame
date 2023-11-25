@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "AGPlayerController.generated.h"
 
+class UAGGameMenuWidget;
+class AAG3DWidgetPlayerActor;
 class UAGPlayerHUDWidget;
 class AAGPlayerCharacter;
 class UInputMappingContext;
@@ -29,6 +31,8 @@ public:
 
 	FVector2D GetMovementInputVector() const { return MovementInputVector; }
 
+	void ToggleGameMenu();
+	
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
 
@@ -42,6 +46,8 @@ private:
 	void HandleWeaponSheath(const FInputActionInstance& Action);
 	
 	void HandleInteract(const FInputActionInstance& Action);
+	
+	void HandleGameMenu(const FInputActionInstance& Action);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="Input|IMC")
@@ -55,6 +61,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Input|IMC")
 	TSoftObjectPtr<UInputMappingContext> IMC_Interact;
+
+	UPROPERTY(EditDefaultsOnly, Category="Input|IMC")
+	TSoftObjectPtr<UInputMappingContext> IMC_GameMenu;
 
 	UPROPERTY(EditDefaultsOnly, Category="Input|Actions")
 	UInputAction* IA_Movement;
@@ -71,6 +80,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Input|Actions")
 	UInputAction* IA_Interact;
 
+	UPROPERTY(EditDefaultsOnly, Category="Input|Actions")
+	UInputAction* IA_ToggleGameMenu;
+
 	UPROPERTY()
 	AAGPlayerCharacter* PlayerRef;
 
@@ -81,5 +93,17 @@ protected:
 
 	UPROPERTY()
 	UAGPlayerHUDWidget* PlayerHUD;
+
+	UPROPERTY(EditDefaultsOnly, Category="UI|GameMenu")
+	TSubclassOf<UAGGameMenuWidget> GameMenuClass;
+
+	UPROPERTY()
+	UAGGameMenuWidget* GameMenu;
+
+	UPROPERTY(EditDefaultsOnly, Category="UI|GameMenu")
+	TSubclassOf<AAG3DWidgetPlayerActor> Player3DWidgetClass;
 	
+	UPROPERTY()
+	AAG3DWidgetPlayerActor* Player3DWidget;
+
 };

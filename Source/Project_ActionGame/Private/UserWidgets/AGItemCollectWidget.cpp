@@ -41,12 +41,19 @@ void UAGItemCollectWidget::NativePreConstruct()
 	UpdateItemDetails();
 }
 
+void UAGItemCollectWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	PlayAnimation(Anim_Appear, 0.0f, 1, EUMGSequencePlayMode::Forward, 1.0f, true);
+}
+
 float UAGItemCollectWidget::PlayDisappearAnim()
 {
 	if (!IsValid(Anim_Disappear))
 		return 0.0f;
 	
-	PlayAnimation(Anim_Disappear, 0.0f, 1, EUMGSequencePlayMode::Forward, 1.0f, true);
+	PlayAnimation(Anim_Disappear, 0.0f, 1, EUMGSequencePlayMode::Forward, 1.0f, false);
 
 	return Anim_Disappear->GetEndTime();
 }

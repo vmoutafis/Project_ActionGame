@@ -19,6 +19,8 @@ class PROJECT_ACTIONGAME_API UAGPlayerHUDWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UAGPlayerHUDWidget(const FObjectInitializer& ObjectInitializer);
+	
 	virtual void NativePreConstruct() override;
 	
 	virtual void NativeConstruct() override;
@@ -26,6 +28,9 @@ public:
 	void CollectItem(FInventoryItem Item);
 	
 protected:
+	UFUNCTION()
+	void AddItemToCollected();
+	
 	UFUNCTION()
 	void RemoveCollectedItem();
 
@@ -38,12 +43,18 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category=Inventory)
 	void OnItemAddedToInventory(const FInventoryItem& Item);
 
+protected:
 	UPROPERTY(EditDefaultsOnly, Category=ItemCollect)
 	TSubclassOf<UAGItemCollectWidget> ItemCollectWidgetClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=ItemCollect, meta=(BindWidget))
 	UScrollBox* SB_ItemCollect;
 
+	TArray<FInventoryItem> CollectedItems;
+	
 	FTimerHandle TH_RemoveCollectedItem;
 	FTimerHandle TH_ScrollNextCollectedItem;
+	FTimerHandle TH_AddItemToCollected;
+
+	bool TempCollectItemsSet;
 };

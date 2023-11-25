@@ -24,6 +24,8 @@ public:
 	
 	virtual void NativePreConstruct() override;
 
+	virtual void NativeConstruct() override;
+
 	float PlayDisappearAnim();
 
 protected:
@@ -53,4 +55,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Animations, meta=(BindWidgetAnim))
 	UWidgetAnimation* Anim_Disappear;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Animations, meta=(BindWidgetAnim))
+	UWidgetAnimation* Anim_Appear;
 };

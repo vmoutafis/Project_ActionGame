@@ -6,7 +6,9 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
+#include "3DWidgetActors/AG3DWidgetPlayerActor.h"
 #include "Characters/AGPlayerCharacter.h"
+#include "UserWidgets/AGGameMenuWidget.h"
 #include "UserWidgets/AGPlayerHUDWidget.h"
 
 AAGPlayerController::AAGPlayerController()
@@ -15,7 +17,15 @@ AAGPlayerController::AAGPlayerController()
 
 	IA_Camera = nullptr;
 	IA_Movement = nullptr;
+	IA_BasicAttack = nullptr;
+	IA_Interact = nullptr;
+	IA_ToggleSheath = nullptr;
+	PlayerHUD = nullptr;
 	PlayerRef = nullptr;
+	Player3DWidget = nullptr;
+	GameMenu = nullptr;
+	GameMenuClass = nullptr;
+	Player3DWidgetClass = nullptr;
 }
 
 void AAGPlayerController::SetupInputComponent()
@@ -37,6 +47,9 @@ void AAGPlayerController::SetupInputComponent()
 
 			if (!IMC_Interact.IsNull())
 				InputSystem->AddMappingContext(IMC_Interact.LoadSynchronous(), 3);
+
+			if (!IMC_Interact.IsNull())
+				InputSystem->AddMappingContext(IMC_GameMenu.LoadSynchronous(), 4);
 		}
 	}
 	
@@ -47,15 +60,43 @@ void AAGPlayerController::SetupInputComponent()
 	Input->BindAction(IA_BasicAttack, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleBasicAttack);
 	Input->BindAction(IA_ToggleSheath, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleWeaponSheath);
 	Input->BindAction(IA_Interact, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleInteract);
+	Input->BindAction(IA_ToggleGameMenu, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleGameMenu);
+}
+
+void AAGPlayerController::ToggleGameMenu()
+{
+	if (GameMenu->IsInViewport())
+	{
+		GameMenu->RemoveFromParent();
+		SetInputMode(FInputModeGameOnly());
+		SetShowMouseCursor(false);
+	}
+	else
+	{
+		GameMenu->AddToPlayerScreen();
+		SetInputMode(FInputModeGameAndUI());
+		SetShowMouseCursor(true);
+	}
 }
 
 void AAGPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
+	SetInputMode(FInputModeGameOnly());
+
 	PlayerRef = Cast<AAGPlayerCharacter>(GetPawn());
 
-	if (!IsValid(PlayerHUD))
+	if (!IsValid(Player3DWidget))
+	{
+		Player3DWidget = GetWorld()->SpawnActor<AAG3DWidgetPlayerActor>(Player3DWidgetClass,
+			FVector(0.0f, 0.0f, 100000.0f), FRotator(0.0f), FActorSpawnParameters());
+	}
+
+	if (!IsValid(GameMenu) && IsValid(GameMenuClass))
+		GameMenu = CreateWidget<UAGGameMenuWidget>(this, GameMenuClass);
+	
+	if (!IsValid(PlayerHUD) && IsValid(PlayerHUDClass))
 		PlayerHUD = CreateWidget<UAGPlayerHUDWidget>(this, PlayerHUDClass);
 
 	PlayerHUD->AddToPlayerScreen();
@@ -110,4 +151,13 @@ void AAGPlayerController::HandleInteract(const FInputActionInstance& Action)
 	
 	if (const bool bPressed = Action.GetValue().Get<bool>())
 		PlayerRef->TryInteract();
+}
+
+void AAGPlayerController::HandleGameMenu(const FInputActionInstance& Action)
+{
+	if (!IsValid(GameMenu))
+		return;
+	
+	if (const bool bPressed = Action.GetValue().Get<bool>())
+		ToggleGameMenu();
 }

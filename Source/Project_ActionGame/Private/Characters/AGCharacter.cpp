@@ -9,6 +9,8 @@ AAGCharacter::AAGCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
 	WeaponSocketName = FName("Socket_Weapon");
 	SheathSocketName = FName("Socket_Sheath");
 	Weapon = CreateDefaultSubobject<UChildActorComponent>(TEXT("Player Weapon"));

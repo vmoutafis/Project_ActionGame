@@ -20,15 +20,17 @@ AAGLoot::AAGLoot()
 	Mesh->SetCollisionResponseToChannel(ECC_Player, ECR_Overlap);
 	Mesh->SetCollisionResponseToChannel(ECC_Enemy, ECR_Ignore);
 	Mesh->SetCollisionResponseToChannel(ECC_NPC, ECR_Ignore);
+	Mesh->SetCollisionResponseToChannel(ECC_Loot, ECR_Block);
 	Mesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
 	Mesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	Mesh->SetSimulatePhysics(true);
 
 	InteractHUDWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Interact HUD Icon"));
-	InteractHUDWidget->SetupAttachment(Mesh);
+	InteractHUDWidget->SetupAttachment(RootComponent);
 	InteractHUDWidget->SetWidgetSpace(EWidgetSpace::Screen);
 	InteractHUDWidget->SetDrawSize(FVector2D(25.0f, 25.0f));
 	InteractHUDWidget->SetVisibility(false);
+	InteractHUDWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	DisplayName = "Item";
 	Icon = nullptr;
@@ -64,7 +66,10 @@ void AAGLoot::Collect()
 		return;
 
 	if (GI->AddInventoryItem(FInventoryItem(GetClass(), Rarity)))
+	{
+		EnableCollectUI(false);
 		Destroy();
+	}
 }
 
 
