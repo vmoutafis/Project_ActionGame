@@ -27,9 +27,17 @@ public:
 public:
 	UPROPERTY(EditDefaultsOnly, Category=Components)
 	UStaticMeshComponent* Mesh;
+
+	UPROPERTY(EditDefaultsOnly, Category=Item)
+	FString DisplayName;
+
+	UPROPERTY(EditDefaultsOnly, Category=Item)
+	UTexture2D* Icon;
 	
+	UPROPERTY(EditDefaultsOnly, Category=Item)
 	int CostValue;
 
+	UPROPERTY(EditDefaultsOnly, Category=Item)
 	TEnumAsByte<EItemRarity> Rarity;
 
 protected:

@@ -35,8 +35,27 @@ FLinearColor UAGHelperFunctions::GetRarityColour(const TEnumAsByte<EItemRarity>&
 	case EItemRarity::IR_Epic :
 		return FLinearColor(1.0f, 0, 1.0f);
 	case EItemRarity::IR_Legendary :
-		return FLinearColor(1.0f, 0.5f, 0);
+		return FLinearColor(1.0f, 0.25f, 0);
 		default:
 			return FLinearColor(1.0f, 0, 0);
+	}
+}
+
+FString UAGHelperFunctions::GetRarityAsString(const TEnumAsByte<EItemRarity>& Rarity)
+{
+	switch (Rarity)
+	{
+	case EItemRarity::IR_Common :
+		return FString("Common");
+	case EItemRarity::IR_UnCommon :
+		return FString("UnCommon");
+	case EItemRarity::IR_Rare :
+		return FString("Rare");
+	case EItemRarity::IR_Epic :
+		return FString("Epic");
+	case EItemRarity::IR_Legendary :
+		return FString("Legendary");
+	default:
+		return FString("Common");
 	}
 }

@@ -19,4 +19,6 @@ public:
 	static TEnumAsByte<EItemRarity> GetRandomRarity();
 
 	static FLinearColor GetRarityColour(const TEnumAsByte<EItemRarity>& Rarity);
+
+	static FString GetRarityAsString(const TEnumAsByte<EItemRarity>& Rarity);
 };

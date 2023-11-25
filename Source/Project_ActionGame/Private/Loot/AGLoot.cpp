@@ -29,7 +29,9 @@ AAGLoot::AAGLoot()
 	InteractHUDWidget->SetWidgetSpace(EWidgetSpace::Screen);
 	InteractHUDWidget->SetDrawSize(FVector2D(25.0f, 25.0f));
 	InteractHUDWidget->SetVisibility(false);
-	
+
+	DisplayName = "Item";
+	Icon = nullptr;
 	Rarity = EItemRarity::IR_Common;
 	CostValue = 1;
 }
