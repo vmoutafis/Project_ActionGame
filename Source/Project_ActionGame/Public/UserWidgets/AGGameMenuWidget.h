@@ -20,7 +20,7 @@ class PROJECT_ACTIONGAME_API UAGGameMenuWidget : public UUserWidget
 
 public:
 	UAGGameMenuWidget(const FObjectInitializer& ObjectInitializer);
-
+	
 	virtual FReply NativeOnPreviewKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 	
 public:

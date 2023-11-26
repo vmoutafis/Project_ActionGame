@@ -22,12 +22,25 @@ class PROJECT_ACTIONGAME_API UAGGameInstance : public UGameInstance
 public:
 	UAGGameInstance();
 
-	bool AddInventoryItem(FInventoryItem Item);
+	bool AddInventoryItem(const FInventoryItem& Item);
 
 	UPROPERTY(BlueprintAssignable, Category="Inventory")
 	FItemAddedToInventory Delegate_OnItemAddedToInventory;
+
+	int GetNumInventoryItems();
+
+	TArray<FInventoryItem> GetInventory();
+
+protected:
+	UAGSaveGame* CreateSaveGameObject(const bool& ForceNew = false);
 	
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Inventory")
+	int MaxInventorySlots;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Save|Game")
+	TSubclassOf<UAGSaveGame> SaveGameClass;
+	
 	UPROPERTY(BlueprintReadOnly, Category="Save|Game")
 	UAGSaveGame* SaveGame;
 

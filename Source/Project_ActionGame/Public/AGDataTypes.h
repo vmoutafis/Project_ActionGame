@@ -24,61 +24,36 @@ struct FInventoryItem
 
 	FInventoryItem()
 	{
+		bIsEmpty = true;
 		LootClass = nullptr;
 		Rarity = EItemRarity::IR_Common;
 	}
 
 	FInventoryItem(const FInventoryItem& Other)
 	{
+		bIsEmpty = Other.bIsEmpty;
 		LootClass = Other.LootClass;
 		Rarity = Other.Rarity;
 	}
 
-	FInventoryItem(TSubclassOf<AAGLoot> DefaultClass, TEnumAsByte<EItemRarity> DefaultRarity)
+	FInventoryItem(TSubclassOf<AAGLoot> DefaultClass, TEnumAsByte<EItemRarity> DefaultRarity, bool IsEmpty = false)
 	{
+		bIsEmpty = IsEmpty;
 		LootClass = DefaultClass;
 		Rarity = DefaultRarity;
 	}
+
+	void Clear()
+	{
+		*this = FInventoryItem();
+	}
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bIsEmpty;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<AAGLoot> LootClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TEnumAsByte<EItemRarity> Rarity;
-};
-
-USTRUCT(BlueprintType)
-struct FInventorySlot
-{
-	GENERATED_BODY()
-
-	FInventorySlot()
-	{
-		bIsEmpty = true;
-		Item = FInventoryItem();
-	}
-
-	FInventorySlot(const FInventorySlot& Other)
-	{
-		bIsEmpty = Other.bIsEmpty;
-		Item = Other.Item;
-	}
-
-	FInventorySlot(const FInventoryItem& DefaultItem)
-	{
-		bIsEmpty = false;
-		Item = DefaultItem;
-	}
-
-	void Clear()
-	{
-		bIsEmpty = true;
-		Item = FInventoryItem();
-	}
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bIsEmpty;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FInventoryItem Item;
 };

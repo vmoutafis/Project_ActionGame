@@ -16,6 +16,9 @@ class PROJECT_ACTIONGAME_API UAGSaveGame : public USaveGame
 	GENERATED_BODY()
 
 public:
+	bool AddItemToInventory(const FInventoryItem& Item);
+
+public:
 	TArray<FInventoryItem> PlayerInventory;
-	
+
 };

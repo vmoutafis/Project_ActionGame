@@ -56,6 +56,9 @@ void AAGPlayerController::SetupInputComponent()
 	UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(InputComponent);
 
 	Input->BindAction(IA_Movement, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleMovement);
+	Input->BindAction(IA_Movement, ETriggerEvent::Canceled, this, &AAGPlayerController::HandleMovement);
+	Input->BindAction(IA_Movement, ETriggerEvent::Completed, this, &AAGPlayerController::HandleMovement);
+	
 	Input->BindAction(IA_Camera, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleCamera);
 	Input->BindAction(IA_BasicAttack, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleBasicAttack);
 	Input->BindAction(IA_ToggleSheath, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleWeaponSheath);
@@ -74,8 +77,9 @@ void AAGPlayerController::ToggleGameMenu()
 	else
 	{
 		GameMenu->AddToPlayerScreen();
-		SetInputMode(FInputModeGameAndUI());
+		SetInputMode(FInputModeUIOnly());
 		SetShowMouseCursor(true);
+		GameMenu->SetFocus();
 	}
 }
 
@@ -151,6 +155,8 @@ void AAGPlayerController::HandleInteract(const FInputActionInstance& Action)
 	
 	if (const bool bPressed = Action.GetValue().Get<bool>())
 		PlayerRef->TryInteract();
+
+	UE_LOG(LogTemp, Warning, TEXT("Interact pressed."))
 }
 
 void AAGPlayerController::HandleGameMenu(const FInputActionInstance& Action)

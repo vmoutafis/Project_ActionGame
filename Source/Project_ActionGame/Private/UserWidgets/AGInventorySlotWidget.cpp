@@ -11,7 +11,7 @@ UAGInventorySlotWidget::UAGInventorySlotWidget(const FObjectInitializer& ObjectI
 {
 	IMG_Border = nullptr;
 	IMG_Icon = nullptr;
-	Item = FInventorySlot();
+	Item = FInventoryItem();
 	HighlightTint = FLinearColor(1.0f, 1.0f, 0.0f, 1.0f);
 	NormalTint = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	bDebugHighlight = false;
@@ -80,10 +80,12 @@ void UAGInventorySlotWidget::EnableHighlight(bool Enable)
 	if (Enable && !Item.bIsEmpty)
 	{
 		IMG_Border->SetColorAndOpacity(HighlightTint);
+		SetCursor(EMouseCursor::GrabHand);
 		return;
 	}
 
 	IMG_Border->SetColorAndOpacity(NormalTint);
+	SetCursor(EMouseCursor::Default);
 }
 
 void UAGInventorySlotWidget::UpdateSlot()
@@ -91,11 +93,13 @@ void UAGInventorySlotWidget::UpdateSlot()
 	if (Item.bIsEmpty)
 	{
 		IMG_Icon->SetBrushFromTexture(nullptr);
+		IMG_Icon->SetVisibility(ESlateVisibility::Hidden);
 		return;
 	}
 
-	IMG_Icon->SetBrushFromTexture(Item.Item.LootClass.GetDefaultObject()->Icon);
-
+	IMG_Icon->SetBrushFromTexture(Item.LootClass.GetDefaultObject()->Icon);
+	IMG_Icon->SetVisibility(ESlateVisibility::Visible);
+	
 	if (!HasAnyUserFocus() && !IsHovered())
 		return;
 

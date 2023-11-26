@@ -10,21 +10,48 @@
 UAGGameInstance::UAGGameInstance()
 {
 	SaveGame = nullptr;
+	MaxInventorySlots = 25;
 }
 
-bool UAGGameInstance::AddInventoryItem(FInventoryItem Item)
+bool UAGGameInstance::AddInventoryItem(const FInventoryItem& Item)
 {
-	if (!IsValid(SaveGame))
+	if (GetInventory().Num() <= 0)
 	{
-		SaveGame = Cast<UAGSaveGame>(UGameplayStatics::CreateSaveGameObject(UAGSaveGame::StaticClass()));
-
-		if (!IsValid(SaveGame))
-			return false;
+		UE_LOG(LogTemp, Warning, TEXT("No inventory exists."))
+		return false;
 	}
 
-	SaveGame->PlayerInventory.Add(Item);
+	const bool Result = SaveGame->AddItemToInventory(Item);
 
-	Delegate_OnItemAddedToInventory.Broadcast(Item);
+	if (Result)
+		Delegate_OnItemAddedToInventory.Broadcast(Item);
 
-	return true;
+	return Result;
+}
+
+int UAGGameInstance::GetNumInventoryItems()
+{
+	if (!IsValid(CreateSaveGameObject()))
+		return 0;
+
+	return SaveGame->PlayerInventory.Num();
+}
+
+TArray<FInventoryItem> UAGGameInstance::GetInventory()
+{
+	if (!CreateSaveGameObject())
+		return TArray<FInventoryItem>();
+
+	if (SaveGame->PlayerInventory.Num() != MaxInventorySlots)
+		SaveGame->PlayerInventory.SetNum(MaxInventorySlots);
+		
+	return SaveGame->PlayerInventory;
+}
+
+UAGSaveGame* UAGGameInstance::CreateSaveGameObject(const bool& ForceNew)
+{
+	if (IsValid(SaveGame) && !ForceNew)
+		return SaveGame;
+	
+	return SaveGame = Cast<UAGSaveGame>(UGameplayStatics::CreateSaveGameObject(SaveGameClass));
 }

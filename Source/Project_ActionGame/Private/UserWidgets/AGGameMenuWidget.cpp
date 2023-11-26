@@ -14,6 +14,7 @@ UAGGameMenuWidget::UAGGameMenuWidget(const FObjectInitializer& ObjectInitializer
 	GMN_Navigation = nullptr;
 	WS_MenuWidgets = nullptr;
 	INV_InventoryMenu = nullptr;
+	SetIsFocusable(true);
 }
 
 FReply UAGGameMenuWidget::NativeOnPreviewKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)

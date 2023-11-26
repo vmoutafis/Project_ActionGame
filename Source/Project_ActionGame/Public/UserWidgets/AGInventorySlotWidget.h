@@ -53,7 +53,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category="Slot|Colour")
 	FLinearColor NormalTint;
 	
-	FInventorySlot Item;
+	FInventoryItem Item;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category="Slot|Colour")
 	bool bDebugHighlight;
