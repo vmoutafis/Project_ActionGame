@@ -70,7 +70,6 @@ struct FInventorySlot
 		Item = DefaultItem;
 	}
 
-	UFUNCTION(BlueprintCallable)
 	void Clear()
 	{
 		bIsEmpty = true;

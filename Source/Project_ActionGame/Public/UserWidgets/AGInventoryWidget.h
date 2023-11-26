@@ -13,5 +13,9 @@ UCLASS()
 class PROJECT_ACTIONGAME_API UAGInventoryWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	UAGInventoryWidget(const FObjectInitializer ObjectInitializer);
+
 	
 };

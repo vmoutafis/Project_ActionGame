@@ -14,6 +14,7 @@ UAGInventorySlotWidget::UAGInventorySlotWidget(const FObjectInitializer& ObjectI
 	Item = FInventorySlot();
 	HighlightTint = FLinearColor(1.0f, 1.0f, 0.0f, 1.0f);
 	NormalTint = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	bDebugHighlight = false;
 }
 
 void UAGInventorySlotWidget::SetSlot(const FInventoryItem* NewItem)
@@ -23,7 +24,6 @@ void UAGInventorySlotWidget::SetSlot(const FInventoryItem* NewItem)
 	else
 		Item = *NewItem;
 
-
 	UpdateSlot();
 }
 
@@ -32,6 +32,19 @@ void UAGInventorySlotWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	UpdateSlot();
+}
+
+void UAGInventorySlotWidget::NativePreConstruct()
+{
+	Super::NativePreConstruct();
+
+	if (IsDesignTime())
+	{
+		if (bDebugHighlight)
+			IMG_Border->SetColorAndOpacity(HighlightTint);
+		else
+			IMG_Border->SetColorAndOpacity(NormalTint);
+	}
 }
 
 void UAGInventorySlotWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)

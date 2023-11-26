@@ -25,6 +25,8 @@ public:
 
 	virtual void NativeConstruct() override;
 
+	virtual void NativePreConstruct() override;
+
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
@@ -52,5 +54,7 @@ protected:
 	FLinearColor NormalTint;
 	
 	FInventorySlot Item;
-	
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category="Slot|Colour")
+	bool bDebugHighlight;
 };

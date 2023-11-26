@@ -3,3 +3,8 @@
 
 #include "UserWidgets/AGInventoryWidget.h"
 
+UAGInventoryWidget::UAGInventoryWidget(const FObjectInitializer ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	
+}
