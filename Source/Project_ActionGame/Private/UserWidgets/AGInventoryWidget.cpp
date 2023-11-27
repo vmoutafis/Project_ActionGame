@@ -19,6 +19,14 @@ UAGInventoryWidget::UAGInventoryWidget(const FObjectInitializer& ObjectInitializ
 	DesignTimeLootClass = AAGWeapon::StaticClass();
 	InventorySlotClass = nullptr;
 	DebugInventoryMaxSlots = 50;
+	ISW_Head = nullptr;
+	ISW_Neck = nullptr;
+	ISW_UpperBody = nullptr;
+	ISW_Hands = nullptr;
+	ISW_Ring = nullptr;
+	ISW_Legs = nullptr;
+	ISW_Feet = nullptr;
+	ISW_Weapon = nullptr;
 }
 
 void UAGInventoryWidget::NativePreConstruct()
@@ -40,7 +48,7 @@ void UAGInventoryWidget::NativePreConstruct()
 		if (i < 5 && IsDesignTime())
 		{
 			FInventoryItem Item = FInventoryItem(DesignTimeLootClass, UAGHelperFunctions::GetRandomRarity());
-			NewWidget->SetSlot(&Item);
+			NewWidget->SetSlot(&Item, i);
 		}
 
 		UGP_Inventory->AddChildToUniformGrid(NewWidget, Row, Column);
@@ -59,11 +67,44 @@ void UAGInventoryWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	UpdateInventory();
+}
+
+void UAGInventoryWidget::OnInventoryItemActivated(int Index)
+{
+	UAGGameInstance* GI = Cast<UAGGameInstance>(GetGameInstance());
+
+	if (!IsValid(GI))
+		return;
+	
+	if (GI->ActivateInventoryItem(Index))
+		UpdateInventory();
+}
+
+TArray<UAGInventorySlotWidget*> UAGInventoryWidget::GetAllEquipmentSlots() const
+{
+	return {
+		ISW_Head,
+		ISW_Neck,
+		ISW_UpperBody,
+		ISW_Hands,
+		ISW_Ring,
+		ISW_Legs,
+		ISW_Feet,
+		ISW_Weapon
+	};
+}
+
+void UAGInventoryWidget::UpdateInventory()
+{
 	UAGGameInstance* GI = Cast<UAGGameInstance>(GetGameInstance());
 
 	if (!IsValid(UGP_Inventory) || !IsValid(InventorySlotClass) || !IsValid(GI))
 		return;
 
+	for (UWidget* Child : UGP_Inventory->GetAllChildren())
+		Cast<UAGInventorySlotWidget>(Child)->Delegate_OnActivated.Clear();
+	
 	UGP_Inventory->ClearChildren();
 	
 	int Row = 0;
@@ -73,13 +114,9 @@ void UAGInventoryWidget::NativeConstruct()
 	{
 		UAGInventorySlotWidget* NewWidget = CreateWidget<UAGInventorySlotWidget>(GetWorld(), InventorySlotClass);
 
-		if (i < 5 && IsDesignTime())
-		{
-			FInventoryItem Item = FInventoryItem(DesignTimeLootClass, UAGHelperFunctions::GetRandomRarity());
-			NewWidget->SetSlot(&Item);
-		}
-		else
-			NewWidget->SetSlot(&GI->GetInventory()[i]);
+		NewWidget->Delegate_OnActivated.AddUniqueDynamic(this, &UAGInventoryWidget::OnInventoryItemActivated);
+
+		NewWidget->SetSlot(&GI->GetInventory()[i], i);
 
 		UGP_Inventory->AddChildToUniformGrid(NewWidget, Row, Column);
 
@@ -90,5 +127,10 @@ void UAGInventoryWidget::NativeConstruct()
 		}
 		else
 			Column++;
+	}
+
+	for (int i = 0; i < GetAllEquipmentSlots().Num(); ++i)
+	{
+		GetAllEquipmentSlots()[i]->SetSlot(&GI->GetAllEquipment()[i], i);
 	}
 }

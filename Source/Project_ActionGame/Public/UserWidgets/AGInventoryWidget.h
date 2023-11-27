@@ -25,6 +25,14 @@ public:
 
 	virtual void NativeConstruct() override;
 
+protected:
+	UFUNCTION()
+	void OnInventoryItemActivated(int Index);
+
+	TArray<UAGInventorySlotWidget*> GetAllEquipmentSlots() const;
+
+	void UpdateInventory();
+	
 public:
 	UPROPERTY(EditDefaultsOnly, Category=Inventory)
 	TSubclassOf<UAGInventorySlotWidget> InventorySlotClass;
@@ -40,4 +48,29 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Inventory, meta=(BindWidget))
 	UUniformGridPanel* UGP_Inventory;
+
+	// Equipment slots
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Inventory, meta=(BindWidget))
+	UAGInventorySlotWidget* ISW_Head;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Inventory, meta=(BindWidget))
+	UAGInventorySlotWidget* ISW_Neck;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Inventory, meta=(BindWidget))
+	UAGInventorySlotWidget* ISW_UpperBody;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Inventory, meta=(BindWidget))
+	UAGInventorySlotWidget* ISW_Hands;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Inventory, meta=(BindWidget))
+	UAGInventorySlotWidget* ISW_Ring;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Inventory, meta=(BindWidget))
+	UAGInventorySlotWidget* ISW_Legs;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Inventory, meta=(BindWidget))
+	UAGInventorySlotWidget* ISW_Feet;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Inventory, meta=(BindWidget))
+	UAGInventorySlotWidget* ISW_Weapon;
 };

@@ -48,6 +48,30 @@ TArray<FInventoryItem> UAGGameInstance::GetInventory()
 	return SaveGame->PlayerInventory;
 }
 
+TArray<FInventoryItem> UAGGameInstance::GetAllEquipment()
+{
+	if (!CreateSaveGameObject())
+		return TArray<FInventoryItem>();
+		
+	return SaveGame->PlayerEquipment;
+}
+
+FInventoryItem UAGGameInstance::GetEquipmentByType(TEnumAsByte<EGearType> GearType)
+{
+	if (!CreateSaveGameObject())
+		return FInventoryItem();
+		
+	return SaveGame->GetEquipmentItem(GearType);
+}
+
+bool UAGGameInstance::ActivateInventoryItem(const int& Index)
+{
+	if (!CreateSaveGameObject())
+		return false;
+	
+	return SaveGame->ActivateInventoryItem(Index);
+}
+
 UAGSaveGame* UAGGameInstance::CreateSaveGameObject(const bool& ForceNew)
 {
 	if (IsValid(SaveGame) && !ForceNew)

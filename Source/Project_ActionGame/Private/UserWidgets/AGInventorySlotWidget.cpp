@@ -3,6 +3,7 @@
 
 #include "UserWidgets/AGInventorySlotWidget.h"
 
+#include "AGHelperFunctions.h"
 #include "Components/Image.h"
 #include "Loot/AGLoot.h"
 
@@ -15,14 +16,23 @@ UAGInventorySlotWidget::UAGInventorySlotWidget(const FObjectInitializer& ObjectI
 	HighlightTint = FLinearColor(1.0f, 1.0f, 0.0f, 1.0f);
 	NormalTint = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	bDebugHighlight = false;
+	InventoryIndex = -1;
 }
 
-void UAGInventorySlotWidget::SetSlot(const FInventoryItem* NewItem)
+void UAGInventorySlotWidget::SetSlot(const FInventoryItem* NewItem, const int& Index)
 {
+	InventoryIndex = Index;
+	
 	if (NewItem == nullptr)
+	{
 		Item.Clear();
+		NormalTint = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	}
 	else
+	{
 		Item = *NewItem;
+		NormalTint = UAGHelperFunctions::GetRarityColour(NewItem->Rarity);
+	}
 
 	UpdateSlot();
 }
@@ -75,21 +85,41 @@ void UAGInventorySlotWidget::NativeOnFocusLost(const FFocusEvent& InFocusEvent)
 	EnableHighlight(false);
 }
 
+FReply UAGInventorySlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry,
+	const FPointerEvent& InMouseEvent)
+{
+	if (!InMouseEvent.IsMouseButtonDown(FKey(EKeys::LeftMouseButton)))
+		return Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
+	
+	if (InventoryIndex < 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No inventory index assigned to slot."))
+		return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
+	}
+
+	if (Item.bIsEmpty)
+		return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
+	
+	Delegate_OnActivated.Broadcast(InventoryIndex);
+	
+	return Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
+}
+
 void UAGInventorySlotWidget::EnableHighlight(bool Enable)
 {
 	if (Enable && !Item.bIsEmpty)
 	{
 		IMG_Border->SetColorAndOpacity(HighlightTint);
-		SetCursor(EMouseCursor::GrabHand);
 		return;
 	}
 
 	IMG_Border->SetColorAndOpacity(NormalTint);
-	SetCursor(EMouseCursor::Default);
 }
 
 void UAGInventorySlotWidget::UpdateSlot()
 {
+	IMG_Border->SetColorAndOpacity(NormalTint);
+	
 	if (Item.bIsEmpty)
 	{
 		IMG_Icon->SetBrushFromTexture(nullptr);

@@ -30,7 +30,13 @@ public:
 	int GetNumInventoryItems();
 
 	TArray<FInventoryItem> GetInventory();
+	
+	TArray<FInventoryItem> GetAllEquipment();
+	
+	FInventoryItem GetEquipmentByType(TEnumAsByte<EGearType> GearType);
 
+	bool ActivateInventoryItem(const int& Index);
+	
 protected:
 	UAGSaveGame* CreateSaveGameObject(const bool& ForceNew = false);
 	

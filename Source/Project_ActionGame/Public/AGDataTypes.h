@@ -17,6 +17,19 @@ enum EItemRarity : uint8
 	IR_Legendary UMETA(DisplayName = "Legendary")
 };
 
+UENUM(BlueprintType)
+enum EGearType: uint8
+{
+	GT_Head = 0 UMETA(DisplayName = "Head"),
+	GT_Neck UMETA(DisplayName = "Neck"),
+	GT_UpperBody UMETA(DisplayName = "Upper Body"),
+	GT_Hands UMETA(DisplayName = "Hands"),
+	GT_Ring UMETA(DisplayName = "Ring"),
+	GT_Legs UMETA(DisplayName = "Legs"),
+	GT_Feet UMETA(DisplayName = "Feet"),
+	GT_Weapon UMETA(DisplayName = "Weapon")
+};
+
 USTRUCT(BlueprintType)
 struct FInventoryItem
 {

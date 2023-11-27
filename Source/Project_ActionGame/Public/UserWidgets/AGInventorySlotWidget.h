@@ -10,6 +10,8 @@
 class UOverlay;
 class UImage;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActivated, int, Index);
+
 /**
  * 
  */
@@ -21,7 +23,7 @@ class PROJECT_ACTIONGAME_API UAGInventorySlotWidget : public UUserWidget
 public:
 	UAGInventorySlotWidget(const FObjectInitializer& ObjectInitializer);
 
-	void SetSlot(const FInventoryItem* NewItem);
+	void SetSlot(const FInventoryItem* NewItem, const int& Index);
 
 	virtual void NativeConstruct() override;
 
@@ -34,12 +36,17 @@ public:
 	virtual FReply NativeOnFocusReceived(const FGeometry& InGeometry, const FFocusEvent& InFocusEvent) override;
 
 	virtual void NativeOnFocusLost(const FFocusEvent& InFocusEvent) override;
+
+	virtual FReply NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	
+	UPROPERTY()
+	FOnActivated Delegate_OnActivated;
 	
 protected:
 	void UpdateSlot();
 
 	void EnableHighlight(bool Enable);
-	
+
 protected:	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Slot, meta=(BindWidget))
 	UImage* IMG_Border;
@@ -54,6 +61,8 @@ protected:
 	FLinearColor NormalTint;
 	
 	FInventoryItem Item;
+
+	int InventoryIndex;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category="Slot|Colour")
 	bool bDebugHighlight;
