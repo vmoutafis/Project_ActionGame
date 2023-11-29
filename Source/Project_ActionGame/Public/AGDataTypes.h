@@ -27,7 +27,8 @@ enum EGearType: uint8
 	GT_Ring UMETA(DisplayName = "Ring"),
 	GT_Legs UMETA(DisplayName = "Legs"),
 	GT_Feet UMETA(DisplayName = "Feet"),
-	GT_Weapon UMETA(DisplayName = "Weapon")
+	GT_Weapon UMETA(DisplayName = "Weapon"),
+	GT_None UMETA(DisplayName = "None")
 };
 
 USTRUCT(BlueprintType)
@@ -40,6 +41,7 @@ struct FInventoryItem
 		bIsEmpty = true;
 		LootClass = nullptr;
 		Rarity = EItemRarity::IR_Common;
+		GearType = EGearType::GT_None;
 	}
 
 	FInventoryItem(const FInventoryItem& Other)
@@ -47,13 +49,16 @@ struct FInventoryItem
 		bIsEmpty = Other.bIsEmpty;
 		LootClass = Other.LootClass;
 		Rarity = Other.Rarity;
+		GearType = Other.GearType;
 	}
 
-	FInventoryItem(TSubclassOf<AAGLoot> DefaultClass, TEnumAsByte<EItemRarity> DefaultRarity, bool IsEmpty = false)
+	FInventoryItem(TSubclassOf<AAGLoot> DefaultClass, TEnumAsByte<EItemRarity> DefaultRarity,
+		bool IsEmpty = false, TEnumAsByte<EGearType> DefaultGearType = EGearType::GT_None)
 	{
 		bIsEmpty = IsEmpty;
 		LootClass = DefaultClass;
 		Rarity = DefaultRarity;
+		GearType = DefaultGearType;
 	}
 
 	void Clear()
@@ -69,4 +74,7 @@ struct FInventoryItem
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TEnumAsByte<EItemRarity> Rarity;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TEnumAsByte<EGearType> GearType;
 };

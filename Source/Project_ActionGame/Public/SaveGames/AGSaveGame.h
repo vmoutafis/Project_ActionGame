@@ -27,6 +27,10 @@ public:
 	void SetEquipmentItem(TEnumAsByte<EGearType> GearType, const FInventoryItem& Item);
 
 	bool ActivateInventoryItem(const int& Index);
+
+	void SwapInventoryItems(const int& ItemIndex1, const int& ItemIndex2);
+
+	bool UnEquipToInventory(TEnumAsByte<EGearType> GearTypeSlot, const int& InventorySlot);
 	
 	FNoInventorySpace Delegate_NoInventorySpace;
 	

@@ -9,7 +9,7 @@
 
 class UAGSaveGame;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemAddedToInventory, FInventoryItem, Item);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryUpdated);
 
 /**
  * 
@@ -24,8 +24,12 @@ public:
 
 	bool AddInventoryItem(const FInventoryItem& Item);
 
-	UPROPERTY(BlueprintAssignable, Category="Inventory")
-	FItemAddedToInventory Delegate_OnItemAddedToInventory;
+	void SwapInventoryItems(const int& ItemIndex1, const int& ItemIndex2);
+
+	bool UnEquipToInventory(TEnumAsByte<EGearType> GearTypeSlot, const int& InventorySlot);
+	
+	UPROPERTY()
+	FInventoryUpdated Delegate_InventoryUpdated;
 
 	int GetNumInventoryItems();
 

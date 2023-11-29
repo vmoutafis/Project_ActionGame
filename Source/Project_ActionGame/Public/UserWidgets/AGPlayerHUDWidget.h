@@ -36,12 +36,6 @@ protected:
 
 	UFUNCTION()
 	void ScrollNextCollectedItem();
-	
-	UFUNCTION()
-	void OnItemAddedToInventory_Pure(FInventoryItem Item);
-
-	UFUNCTION(BlueprintImplementableEvent, Category=Inventory)
-	void OnItemAddedToInventory(const FInventoryItem& Item);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category=ItemCollect)

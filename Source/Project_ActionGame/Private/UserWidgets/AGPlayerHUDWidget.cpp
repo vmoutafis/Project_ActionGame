@@ -49,12 +49,6 @@ void UAGPlayerHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	UAGGameInstance* GI = Cast<UAGGameInstance>(GetGameInstance());
-
-	if (!IsValid(GI))
-		return;
-
-	GI->Delegate_OnItemAddedToInventory.AddDynamic(this, &UAGPlayerHUDWidget::OnItemAddedToInventory_Pure);
 }
 
 void UAGPlayerHUDWidget::CollectItem(FInventoryItem Item)
@@ -102,12 +96,4 @@ void UAGPlayerHUDWidget::ScrollNextCollectedItem()
 	GetWorld()->GetTimerManager().SetTimer(TH_ScrollNextCollectedItem, this, &UAGPlayerHUDWidget::ScrollNextCollectedItem, 2.0f);
 	
 	GetWorld()->GetTimerManager().SetTimer(TH_RemoveCollectedItem, this, &UAGPlayerHUDWidget::RemoveCollectedItem, 1.0f);
-}
-
-void UAGPlayerHUDWidget::OnItemAddedToInventory_Pure(FInventoryItem Item)
-{
-	CollectItem(std::move(Item));
-	
-	OnItemAddedToInventory(std::move(Item));
-	UE_LOG(LogTemp, Warning, TEXT("Item Added: %s"), *Item.LootClass->GetName());
 }

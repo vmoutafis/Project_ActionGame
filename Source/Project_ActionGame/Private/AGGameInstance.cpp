@@ -24,8 +24,31 @@ bool UAGGameInstance::AddInventoryItem(const FInventoryItem& Item)
 	const bool Result = SaveGame->AddItemToInventory(Item);
 
 	if (Result)
-		Delegate_OnItemAddedToInventory.Broadcast(Item);
+		Delegate_InventoryUpdated.Broadcast();
 
+	return Result;
+}
+
+void UAGGameInstance::SwapInventoryItems(const int& ItemIndex1, const int& ItemIndex2)
+{
+	if (!IsValid(CreateSaveGameObject()))
+		return;
+
+	SaveGame->SwapInventoryItems(ItemIndex1, ItemIndex2);
+
+	Delegate_InventoryUpdated.Broadcast();
+}
+
+bool UAGGameInstance::UnEquipToInventory(TEnumAsByte<EGearType> GearTypeSlot, const int& InventorySlot)
+{
+	if (!IsValid(CreateSaveGameObject()))
+		return false;
+
+	const bool Result = SaveGame->UnEquipToInventory(GearTypeSlot, InventorySlot);
+
+	if (Result)
+		Delegate_InventoryUpdated.Broadcast();
+	
 	return Result;
 }
 
@@ -68,8 +91,13 @@ bool UAGGameInstance::ActivateInventoryItem(const int& Index)
 {
 	if (!CreateSaveGameObject())
 		return false;
+
+	const bool Result = SaveGame->ActivateInventoryItem(Index);
+
+	if (Result)
+		Delegate_InventoryUpdated.Broadcast();
 	
-	return SaveGame->ActivateInventoryItem(Index);
+	return Result;
 }
 
 UAGSaveGame* UAGGameInstance::CreateSaveGameObject(const bool& ForceNew)

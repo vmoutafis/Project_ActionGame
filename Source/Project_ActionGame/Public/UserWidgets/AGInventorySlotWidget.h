@@ -10,8 +10,6 @@
 class UOverlay;
 class UImage;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActivated, int, Index);
-
 /**
  * 
  */
@@ -24,6 +22,8 @@ public:
 	UAGInventorySlotWidget(const FObjectInitializer& ObjectInitializer);
 
 	void SetSlot(const FInventoryItem* NewItem, const int& Index);
+
+	void SetAsEquipmentSlot(TEnumAsByte<EGearType> DefaultGearType);
 
 	virtual void NativeConstruct() override;
 
@@ -38,16 +38,24 @@ public:
 	virtual void NativeOnFocusLost(const FFocusEvent& InFocusEvent) override;
 
 	virtual FReply NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-	
-	UPROPERTY()
-	FOnActivated Delegate_OnActivated;
+
+	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
+
+	virtual void NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+
+	virtual FReply NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	
 protected:
-	void UpdateSlot();
+	void UpdateSlot(const bool& bForceEmpty = false);
 
 	void EnableHighlight(bool Enable);
 
-protected:	
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Slot, meta=(BindWidget))
+	UImage* IMG_Highlight;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Slot, meta=(BindWidget))
 	UImage* IMG_Border;
 	

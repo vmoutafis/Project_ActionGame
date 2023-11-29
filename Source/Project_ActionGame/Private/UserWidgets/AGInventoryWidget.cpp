@@ -68,17 +68,15 @@ void UAGInventoryWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	UpdateInventory();
+
+	Cast<UAGGameInstance>(GetGameInstance())->Delegate_InventoryUpdated.AddDynamic(this, &UAGInventoryWidget::UpdateInventory);
 }
 
-void UAGInventoryWidget::OnInventoryItemActivated(int Index)
+void UAGInventoryWidget::NativeDestruct()
 {
-	UAGGameInstance* GI = Cast<UAGGameInstance>(GetGameInstance());
+	Super::NativeDestruct();
 
-	if (!IsValid(GI))
-		return;
-	
-	if (GI->ActivateInventoryItem(Index))
-		UpdateInventory();
+	Cast<UAGGameInstance>(GetGameInstance())->Delegate_InventoryUpdated.Clear();
 }
 
 TArray<UAGInventorySlotWidget*> UAGInventoryWidget::GetAllEquipmentSlots() const
@@ -101,9 +99,6 @@ void UAGInventoryWidget::UpdateInventory()
 
 	if (!IsValid(UGP_Inventory) || !IsValid(InventorySlotClass) || !IsValid(GI))
 		return;
-
-	for (UWidget* Child : UGP_Inventory->GetAllChildren())
-		Cast<UAGInventorySlotWidget>(Child)->Delegate_OnActivated.Clear();
 	
 	UGP_Inventory->ClearChildren();
 	
@@ -113,8 +108,6 @@ void UAGInventoryWidget::UpdateInventory()
 	for (int i = 0; i < GI->GetInventory().Num(); ++i)
 	{
 		UAGInventorySlotWidget* NewWidget = CreateWidget<UAGInventorySlotWidget>(GetWorld(), InventorySlotClass);
-
-		NewWidget->Delegate_OnActivated.AddUniqueDynamic(this, &UAGInventoryWidget::OnInventoryItemActivated);
 
 		NewWidget->SetSlot(&GI->GetInventory()[i], i);
 
@@ -132,5 +125,6 @@ void UAGInventoryWidget::UpdateInventory()
 	for (int i = 0; i < GetAllEquipmentSlots().Num(); ++i)
 	{
 		GetAllEquipmentSlots()[i]->SetSlot(&GI->GetAllEquipment()[i], i);
+		GetAllEquipmentSlots()[i]->SetAsEquipmentSlot(GI->GetAllEquipment()[i].GearType);
 	}
 }

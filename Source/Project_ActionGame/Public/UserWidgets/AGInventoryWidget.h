@@ -25,12 +25,12 @@ public:
 
 	virtual void NativeConstruct() override;
 
-protected:
-	UFUNCTION()
-	void OnInventoryItemActivated(int Index);
+	virtual void NativeDestruct() override;
 
+protected:
 	TArray<UAGInventorySlotWidget*> GetAllEquipmentSlots() const;
 
+	UFUNCTION()
 	void UpdateInventory();
 	
 public:
