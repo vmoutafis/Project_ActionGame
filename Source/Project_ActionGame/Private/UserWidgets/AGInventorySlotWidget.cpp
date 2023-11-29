@@ -16,6 +16,7 @@ UAGInventorySlotWidget::UAGInventorySlotWidget(const FObjectInitializer& ObjectI
 {
 	IMG_Border = nullptr;
 	IMG_Icon = nullptr;
+	IMG_Highlight = nullptr;
 	Item = FInventoryItem();
 	HighlightTint = FLinearColor(1.0f, 1.0f, 0.0f, 1.0f);
 	NormalTint = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);

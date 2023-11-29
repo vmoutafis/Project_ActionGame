@@ -49,6 +49,7 @@ void UAGPlayerHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	Cast<UAGGameInstance>(GetGameInstance())->Delegate_LootCollected.AddDynamic(this, &UAGPlayerHUDWidget::CollectItem);
 }
 
 void UAGPlayerHUDWidget::CollectItem(FInventoryItem Item)

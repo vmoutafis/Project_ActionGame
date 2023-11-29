@@ -13,6 +13,16 @@ UAGGameInstance::UAGGameInstance()
 	MaxInventorySlots = 25;
 }
 
+bool UAGGameInstance::CollectLoot(const FInventoryItem& Item)
+{
+	const bool Result = AddInventoryItem(Item);
+
+	if (Result)
+		Delegate_LootCollected.Broadcast(Item);
+
+	return Result;
+}
+
 bool UAGGameInstance::AddInventoryItem(const FInventoryItem& Item)
 {
 	if (GetInventory().Num() <= 0)

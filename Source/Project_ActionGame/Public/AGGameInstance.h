@@ -10,6 +10,7 @@
 class UAGSaveGame;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryUpdated);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLootColleced, FInventoryItem, Item);
 
 /**
  * 
@@ -22,6 +23,8 @@ class PROJECT_ACTIONGAME_API UAGGameInstance : public UGameInstance
 public:
 	UAGGameInstance();
 
+	bool CollectLoot(const FInventoryItem& Item);
+	
 	bool AddInventoryItem(const FInventoryItem& Item);
 
 	void SwapInventoryItems(const int& ItemIndex1, const int& ItemIndex2);
@@ -30,6 +33,9 @@ public:
 	
 	UPROPERTY()
 	FInventoryUpdated Delegate_InventoryUpdated;
+
+	UPROPERTY()
+	FLootColleced Delegate_LootCollected;
 
 	int GetNumInventoryItems();
 

@@ -25,6 +25,7 @@ public:
 	
 	virtual void NativeConstruct() override;
 
+	UFUNCTION()
 	void CollectItem(FInventoryItem Item);
 	
 protected:

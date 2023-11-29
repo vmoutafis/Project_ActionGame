@@ -65,7 +65,7 @@ void AAGLoot::Collect()
 	if (!IsValid(GI))
 		return;
 
-	if (GI->AddInventoryItem(FInventoryItem(GetClass(), Rarity)))
+	if (GI->CollectLoot(FInventoryItem(GetClass(), Rarity)))
 	{
 		EnableCollectUI(false);
 		Destroy();

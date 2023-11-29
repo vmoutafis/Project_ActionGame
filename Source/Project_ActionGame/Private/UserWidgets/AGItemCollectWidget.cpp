@@ -19,6 +19,7 @@ UAGItemCollectWidget::UAGItemCollectWidget(const FObjectInitializer& ObjectIniti
 	IMG_Icon = nullptr;
 	IMG_IconBG = nullptr;
 	Anim_Disappear = nullptr;
+	Anim_Appear = nullptr;
 }
 
 void UAGItemCollectWidget::InitialiseItem(FString NewDisplayName, UTexture2D* NewIcon,
