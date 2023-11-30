@@ -59,3 +59,32 @@ FString UAGHelperFunctions::GetRarityAsString(const TEnumAsByte<EItemRarity>& Ra
 		return FString("Common");
 	}
 }
+
+float UAGHelperFunctions::GetRarityMultiplier(const TEnumAsByte<EItemRarity>& Rarity)
+{
+	switch (Rarity)
+	{
+	case EItemRarity::IR_Common :
+		return 1.0f;
+	case EItemRarity::IR_UnCommon :
+		return 1.5f;
+	case EItemRarity::IR_Rare :
+		return 2.0f;
+	case EItemRarity::IR_Epic :
+		return 2.5f;
+	case EItemRarity::IR_Legendary :
+		return 4.0f;
+	default:
+		return 1.0f;
+	}
+}
+
+void UAGHelperFunctions::AGSimpleWarning(const FString& Message)
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *Message)
+}
+
+void UAGHelperFunctions::AGSimpleError(const FString& Message)
+{
+	UE_LOG(LogTemp, Error, TEXT("%s"), *Message)
+}

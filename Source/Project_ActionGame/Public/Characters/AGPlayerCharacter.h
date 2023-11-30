@@ -25,6 +25,8 @@ public:
 	virtual void BeginPlay() override;
 
 	bool TryInteract();
+
+	virtual void EquipWeapon(const FInventoryItem* Item) override;
 	
 protected:
 	UFUNCTION()

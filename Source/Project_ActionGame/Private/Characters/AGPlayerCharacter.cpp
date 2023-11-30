@@ -4,11 +4,14 @@
 #include "Characters/AGPlayerCharacter.h"
 
 #include "AGCustomObjectTraceChannels.h"
+#include "AGPlayerController.h"
+#include "3DWidgetActors/AG3DWidgetPlayerActor.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Loot/AGLoot.h"
+#include "Weapons/AGWeapon.h"
 
 AAGPlayerCharacter::AAGPlayerCharacter()
 {
@@ -57,6 +60,22 @@ bool AAGPlayerCharacter::TryInteract()
 	}
 	
 	return true;
+}
+
+void AAGPlayerCharacter::EquipWeapon(const FInventoryItem* Item)
+{
+	Super::EquipWeapon(Item);
+
+	if (!IsValid(Weapon->GetChildActorClass()))
+	{
+		Cast<AAGPlayerController>(GetController())->GetPlayer3DWidget()->SetWeapon(nullptr);
+		return;
+	}
+
+	USkeletalMesh* WeaponMesh = Cast<AAGWeapon>(Weapon->GetChildActor())->WeaponMesh->GetSkeletalMeshAsset();
+
+	if (IsValid(WeaponMesh))
+		Cast<AAGPlayerController>(GetController())->GetPlayer3DWidget()->SetWeapon(WeaponMesh);
 }
 
 void AAGPlayerCharacter::OnLootColliderOverlaped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

@@ -3,6 +3,7 @@
 
 #include "SaveGames/AGSaveGame.h"
 
+#include "AGHelperFunctions.h"
 #include "Loot/AGDLootGearWeapon.h"
 
 UAGSaveGame::UAGSaveGame()
@@ -45,6 +46,9 @@ void UAGSaveGame::SetEquipmentItem(TEnumAsByte<EGearType> GearType, const FInven
 {
 	PlayerEquipment[GearType] = Item;
 	PlayerEquipment[GearType].GearType = GearType;
+
+	UAGHelperFunctions::AGSimpleWarning("Equipment Item Set.");
+	Delegate_EquipmentUpdated.Broadcast(GearType);
 }
 
 bool UAGSaveGame::ActivateInventoryItem(const int& Index)

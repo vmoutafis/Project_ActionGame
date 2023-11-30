@@ -4,6 +4,7 @@
 #include "Weapons/AGWeapon.h"
 
 #include "AGCustomObjectTraceChannels.h"
+#include "AGHelperFunctions.h"
 #include "Characters/AGPlayerCharacter.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -28,12 +29,16 @@ AAGWeapon::AAGWeapon()
 	DamageCollision->SetCollisionResponseToChannel(ECC_Enemy, ECR_Overlap);
 	DamageCollision->SetCollisionResponseToChannel(ECC_Player, ECR_Overlap);
 	DamageCollision->SetCollisionResponseToChannel(ECC_NPC, ECR_Overlap);
+
+	BaseDamage = 1.0f;
+	SpecialDamage = 0.0f;
+	Rarity = EItemRarity::IR_Common;
 }
 
-void AAGWeapon::InitialiseWeapon(AActor* ParentOwner, const float& WeaponDamage)
+void AAGWeapon::InitialiseWeapon(TEnumAsByte<EItemRarity> NewRarity, const float& AdditionalDamage)
 {
-	SetOwner(ParentOwner);
-	Damage = WeaponDamage;
+	Rarity = NewRarity;
+	SpecialDamage = AdditionalDamage;
 }
 
 void AAGWeapon::ActivateDamage()
@@ -44,6 +49,15 @@ void AAGWeapon::ActivateDamage()
 void AAGWeapon::DeactivateDamage()
 {
 	DamageCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+float AAGWeapon::GetFullWeaponDamage() const
+{
+	float Damage = BaseDamage + SpecialDamage;
+
+	Damage += UAGHelperFunctions::GetRarityMultiplier(Rarity);
+	
+	return Damage;
 }
 
 // Called when the game starts or when spawned
@@ -62,5 +76,5 @@ void AAGWeapon::OnDamageColliderHit(UPrimitiveComponent* OverlappedComponent, AA
 
 	AController* OwnerController = Cast<APawn>(GetOwner())->GetController();
 	
-	UGameplayStatics::ApplyDamage(OtherActor, Damage, OwnerController, this, DamageType);
+	UGameplayStatics::ApplyDamage(OtherActor, GetFullWeaponDamage(), OwnerController, this, DamageType);
 }

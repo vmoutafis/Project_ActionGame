@@ -32,6 +32,8 @@ public:
 	FVector2D GetMovementInputVector() const { return MovementInputVector; }
 
 	void ToggleGameMenu();
+
+	AAG3DWidgetPlayerActor* GetPlayer3DWidget() const { return Player3DWidget; }
 	
 protected:
 	virtual void OnPossess(APawn* InPawn) override;

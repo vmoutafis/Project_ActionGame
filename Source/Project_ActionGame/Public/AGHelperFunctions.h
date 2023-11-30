@@ -21,4 +21,10 @@ public:
 	static FLinearColor GetRarityColour(const TEnumAsByte<EItemRarity>& Rarity);
 
 	static FString GetRarityAsString(const TEnumAsByte<EItemRarity>& Rarity);
+
+	static float GetRarityMultiplier(const TEnumAsByte<EItemRarity>& Rarity);
+
+	static void AGSimpleWarning(const FString& Message);
+
+	static void AGSimpleError(const FString& Message);
 };

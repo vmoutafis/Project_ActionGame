@@ -8,6 +8,7 @@
 #include "AGSaveGame.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FNoInventorySpace);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEquipmentUpdated, TEnumAsByte<EGearType>, GearType);
 
 /**
  * 
@@ -31,8 +32,12 @@ public:
 	void SwapInventoryItems(const int& ItemIndex1, const int& ItemIndex2);
 
 	bool UnEquipToInventory(TEnumAsByte<EGearType> GearTypeSlot, const int& InventorySlot);
-	
+
+	UPROPERTY()
 	FNoInventorySpace Delegate_NoInventorySpace;
+
+	UPROPERTY()
+	FEquipmentUpdated Delegate_EquipmentUpdated;
 	
 public:
 	TArray<FInventoryItem> PlayerInventory;

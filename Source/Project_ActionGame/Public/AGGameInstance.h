@@ -46,10 +46,13 @@ public:
 	FInventoryItem GetEquipmentByType(TEnumAsByte<EGearType> GearType);
 
 	bool ActivateInventoryItem(const int& Index);
-	
+
 protected:
 	UAGSaveGame* CreateSaveGameObject(const bool& ForceNew = false);
-	
+
+	UFUNCTION()
+	void EquipmentUpdated(TEnumAsByte<EGearType> GearType);
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Inventory")
 	int MaxInventorySlots;

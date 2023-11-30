@@ -6,6 +6,8 @@
 #include "AGLootGear.h"
 #include "AGDLootGearWeapon.generated.h"
 
+class AAGWeapon;
+
 UCLASS()
 class PROJECT_ACTIONGAME_API AAGDLootGearWeapon : public AAGLootGear
 {
@@ -16,7 +18,7 @@ public:
 	AAGDLootGearWeapon();
 
 public:
-	float Damage;
-
-	TSubclassOf<UDamageType> DamageType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
+	TSubclassOf<AAGWeapon> WeaponClass;
+	
 };

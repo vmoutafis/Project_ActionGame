@@ -3,6 +3,11 @@
 
 #include "Characters/AGCharacter.h"
 
+#include "AGDataTypes.h"
+#include "AGHelperFunctions.h"
+#include "Loot/AGDLootGearWeapon.h"
+#include "Weapons/AGWeapon.h"
+
 // Sets default values
 AAGCharacter::AAGCharacter()
 {
@@ -58,9 +63,12 @@ void AAGCharacter::OnConstruction(const FTransform& Transform)
 
 void AAGCharacter::SheathWeapon(const bool& bInstant)
 {
-	if (!IsWeaponUnsheathed()  ||
+	GetWorldTimerManager().ClearTimer(TH_UnsheathWeaponTimer);
+	
+	if ((!IsWeaponUnsheathed()  ||
 		GetMesh()->GetAnimInstance()->IsAnyMontagePlaying() ||
-		bIsBasicAttacking)
+		bIsBasicAttacking) &&
+		!bInstant)
 		return;
 	
 	if (!IsValid(SheathWeaponAnim) || bInstant)
@@ -73,13 +81,12 @@ void AAGCharacter::SheathWeapon(const bool& bInstant)
 	
 	const float AnimTime = PlayAnimMontage(SheathWeaponAnim);
 
-	GetWorldTimerManager().ClearTimer(TH_UnsheathWeaponTimer);
 	GetWorldTimerManager().SetTimer(TH_SheathWeaponTimer, this, &AAGCharacter::AttachWeaponToSheath, AnimTime);
 }
 
 void AAGCharacter::ToggleSheath()
 {
-	if (bIsSheathingWeapon)
+	if (bIsSheathingWeapon || !HasWeaponEquipped())
 		return;
 	
 	if (IsWeaponUnsheathed())
@@ -88,11 +95,33 @@ void AAGCharacter::ToggleSheath()
 		UnsheathWeapon();
 }
 
+void AAGCharacter::EquipWeapon(const FInventoryItem* Item)
+{
+	ForceCancelAttack();
+	SheathWeapon(true);
+
+	if (Item == nullptr)
+	{
+		Weapon->SetChildActorClass(nullptr);
+		return;
+	}
+
+	const AAGDLootGearWeapon* WeaponLoot = Cast<AAGDLootGearWeapon>(Item->LootClass.GetDefaultObject());
+	
+	if (!IsValid(WeaponLoot) || !IsValid(WeaponLoot->WeaponClass))
+		return;
+
+	Weapon->SetChildActorClass(WeaponLoot->WeaponClass);
+}
+
 void AAGCharacter::UnsheathWeapon(const bool& bInstant)
 {
-	if (IsWeaponUnsheathed() ||
+	GetWorldTimerManager().ClearTimer(TH_SheathWeaponTimer);
+
+	if ((IsWeaponUnsheathed() ||
 		GetMesh()->GetAnimInstance()->IsAnyMontagePlaying() ||
-		bIsBasicAttacking)
+		bIsBasicAttacking) &&
+		!bInstant)
 		return;
 	
 	if (!IsValid(UnsheathWeaponAnim) || bInstant)
@@ -105,14 +134,16 @@ void AAGCharacter::UnsheathWeapon(const bool& bInstant)
 
 	const float AnimTime = PlayAnimMontage(UnsheathWeaponAnim);
 	
-	GetWorldTimerManager().ClearTimer(TH_SheathWeaponTimer);
 	GetWorldTimerManager().SetTimer(TH_UnsheathWeaponTimer, this, &AAGCharacter::AttachWeaponToHand, AnimTime);
 }
 
 bool AAGCharacter::TryBasicAttack()
 {
-	if (bIsBasicAttacking || !BasicAttackAnims.IsValidIndex(BasicAttackCombo) || !IsWeaponUnsheathed())
+	if (bIsBasicAttacking || !BasicAttackAnims.IsValidIndex(BasicAttackCombo) || !HasWeaponEquipped())
 		return false;
+
+	if (!IsWeaponUnsheathed())
+		UnsheathWeapon(true);
 
 	bIsBasicAttacking = true;
 
@@ -158,6 +189,18 @@ void AAGCharacter::ForceCancelAttack()
 			break;
 		}
 	}
+}
+
+void AAGCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	EquipWeapon(nullptr);
+}
+
+bool AAGCharacter::HasWeaponEquipped() const
+{
+	return IsValid(Weapon->GetChildActorClass());
 }
 
 void AAGCharacter::LerpActorRotation(const FRotator& Rotation, const float& Speed)

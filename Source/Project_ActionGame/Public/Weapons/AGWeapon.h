@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AGDataTypes.h"
 #include "GameFramework/Actor.h"
 #include "AGWeapon.generated.h"
 
@@ -17,13 +18,15 @@ public:
 	// Sets default values for this actor's properties
 	AAGWeapon();
 
-	void InitialiseWeapon(AActor* ParentOwner, const float& WeaponDamage);
-
+	void InitialiseWeapon(TEnumAsByte<EItemRarity> NewRarity, const float& AdditionalDamage = 0.0f);
+	
 	// Turn on the damage collider for the weapon
 	void ActivateDamage();
 
 	// Turn off the damage collider for the weapon
 	void DeactivateDamage();
+
+	float GetFullWeaponDamage() const;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -41,9 +44,13 @@ public:
 	UBoxComponent* DamageCollision;
 
 protected:
-	float Damage;
+	UPROPERTY(EditDefaultsOnly, Category="Weapon|Damage")
+	float BaseDamage;
 
-	UPROPERTY(EditDefaultsOnly, Category="Weapon|DamageType")
+	float SpecialDamage;
+
+	UPROPERTY(EditDefaultsOnly, Category="Weapon|Damage")
 	TSubclassOf<UDamageType> DamageType;
-	
+
+	TEnumAsByte<EItemRarity> Rarity;
 };

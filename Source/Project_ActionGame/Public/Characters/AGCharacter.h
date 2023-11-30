@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "AGCharacter.generated.h"
 
+struct FInventoryItem;
+
 UCLASS()
 class PROJECT_ACTIONGAME_API AAGCharacter : public ACharacter
 {
@@ -24,6 +26,8 @@ public:
 	bool IsWeaponUnsheathed() const { return bIsWeaponUnsheathed; }
 
 	void ToggleSheath();
+
+	virtual void EquipWeapon(const FInventoryItem* Item);
 
 	// UnSheath the players weapon by playing the anim
 	// Should be an anim notify that runs AttachWeaponToHand()
@@ -44,6 +48,10 @@ public:
 
 	// Force cancels an attack and resets all required variables
 	void ForceCancelAttack();
+
+	virtual void BeginPlay() override;
+
+	bool HasWeaponEquipped() const;
 
 protected:
 	// Lerp the actor to a new rotation over time

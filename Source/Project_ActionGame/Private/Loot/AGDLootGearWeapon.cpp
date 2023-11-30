@@ -10,7 +10,6 @@ AAGDLootGearWeapon::AAGDLootGearWeapon()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Damage = 1.0f;
-	DamageType = UDamageType::StaticClass();
+	WeaponClass = nullptr;
 }
 

@@ -6,6 +6,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "SaveGames/AGSaveGame.h"
 #include "AGDataTypes.h"
+#include "AGHelperFunctions.h"
+#include "Characters/AGPlayerCharacter.h"
 
 UAGGameInstance::UAGGameInstance()
 {
@@ -115,5 +117,26 @@ UAGSaveGame* UAGGameInstance::CreateSaveGameObject(const bool& ForceNew)
 	if (IsValid(SaveGame) && !ForceNew)
 		return SaveGame;
 	
-	return SaveGame = Cast<UAGSaveGame>(UGameplayStatics::CreateSaveGameObject(SaveGameClass));
+	SaveGame = Cast<UAGSaveGame>(UGameplayStatics::CreateSaveGameObject(SaveGameClass));
+
+	SaveGame->Delegate_EquipmentUpdated.AddDynamic(this, &UAGGameInstance::EquipmentUpdated);
+	
+	return SaveGame;
+}
+
+void UAGGameInstance::EquipmentUpdated(TEnumAsByte<EGearType> GearType)
+{
+	if (AAGPlayerCharacter* PlayerRef = Cast<AAGPlayerCharacter>(GetPrimaryPlayerController()->GetPawn()))
+	{
+		if (GearType == EGearType::GT_Weapon)
+		{
+			const FInventoryItem Item = GetEquipmentByType(GearType);
+			const FInventoryItem* ItemObj = nullptr;
+
+			if (!Item.bIsEmpty)
+				ItemObj = &Item;
+			
+			PlayerRef->EquipWeapon(ItemObj);
+		}
+	}
 }

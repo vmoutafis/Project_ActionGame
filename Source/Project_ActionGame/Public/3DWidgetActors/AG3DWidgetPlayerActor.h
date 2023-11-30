@@ -16,9 +16,16 @@ class PROJECT_ACTIONGAME_API AAG3DWidgetPlayerActor : public AAG3DWidgetActor
 
 public:
 	AAG3DWidgetPlayerActor();
+
+	void SetWeapon(USkeletalMesh* NewMesh);
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category=Components)
 	USkeletalMeshComponent* Mesh;
-	
+
+	UPROPERTY(EditDefaultsOnly, Category=Components)
+	USkeletalMeshComponent* WeaponMesh;
+
+	UPROPERTY(EditDefaultsOnly, Category=Weapon)
+	FName WeaponSocketName;
 };
