@@ -46,6 +46,8 @@ void UAGItemCollectWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	UpdateItemDetails();
+
 	PlayAnimation(Anim_Appear, 0.0f, 1, EUMGSequencePlayMode::Forward, 1.0f, true);
 }
 

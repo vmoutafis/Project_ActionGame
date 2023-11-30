@@ -71,7 +71,8 @@ void UAGPlayerHUDWidget::AddItemToCollected()
 	UAGItemCollectWidget* NewWidget = CreateWidget<UAGItemCollectWidget>(GetOwningPlayer(), ItemCollectWidgetClass);
 
 	const AAGLoot* ItemObj = CollectedItems[0].LootClass.GetDefaultObject();
-	NewWidget->InitialiseItem(ItemObj->DisplayName, ItemObj->Icon, ItemObj->Rarity);
+	const FInventoryItem ItemLoot = CollectedItems[0];
+	NewWidget->InitialiseItem(ItemObj->DisplayName, ItemObj->Icon, ItemLoot.Rarity);
 	NewWidget->SetIsFocusable(true);
 	NewWidget->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 2.0f));
 	SB_ItemCollect->AddChild(NewWidget);
