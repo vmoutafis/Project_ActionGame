@@ -53,11 +53,12 @@ void AAGWeapon::DeactivateDamage()
 
 float AAGWeapon::GetFullWeaponDamage() const
 {
-	float Damage = BaseDamage + SpecialDamage;
+	return GetRarityDamage(Rarity) + SpecialDamage;
+}
 
-	Damage += UAGHelperFunctions::GetRarityMultiplier(Rarity);
-	
-	return Damage;
+float AAGWeapon::GetRarityDamage(const TEnumAsByte<EItemRarity>& TestRarity) const
+{
+	return BaseDamage * UAGHelperFunctions::GetRarityMultiplier(TestRarity);
 }
 
 // Called when the game starts or when spawned

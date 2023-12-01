@@ -27,6 +27,10 @@ public:
 	void DeactivateDamage();
 
 	float GetFullWeaponDamage() const;
+
+	float GetBaseDamage() const { return BaseDamage; }
+
+	float GetRarityDamage(const TEnumAsByte<EItemRarity>& TestRarity) const;
 	
 protected:
 	// Called when the game starts or when spawned
