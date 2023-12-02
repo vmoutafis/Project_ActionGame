@@ -6,9 +6,11 @@
 #include "AGDataTypes.h"
 #include "AGGameInstance.h"
 #include "AGHelperFunctions.h"
+#include "Blueprint/SlateBlueprintLibrary.h"
 #include "Components/ScrollBox.h"
 #include "Components/UniformGridPanel.h"
 #include "UserWidgets/AGInventorySlotWidget.h"
+#include "UserWidgets/AGItemInfoWidget.h"
 #include "Weapons/AGWeapon.h"
 
 UAGInventoryWidget::UAGInventoryWidget(const FObjectInitializer& ObjectInitializer)
@@ -27,6 +29,8 @@ UAGInventoryWidget::UAGInventoryWidget(const FObjectInitializer& ObjectInitializ
 	ISW_Legs = nullptr;
 	ISW_Feet = nullptr;
 	ISW_Weapon = nullptr;
+	ItemInfoWidget = nullptr;
+	ItemInfoWidgetClass = UAGItemInfoWidget::StaticClass();
 }
 
 void UAGInventoryWidget::NativePreConstruct()
@@ -48,7 +52,7 @@ void UAGInventoryWidget::NativePreConstruct()
 		if (i < 5 && IsDesignTime())
 		{
 			FInventoryItem Item = FInventoryItem(DesignTimeLootClass, UAGHelperFunctions::GetRandomRarity());
-			NewWidget->SetSlot(&Item, i);
+			NewWidget->SetSlot(this, &Item, i);
 		}
 
 		UGP_Inventory->AddChildToUniformGrid(NewWidget, Row, Column);
@@ -70,6 +74,8 @@ void UAGInventoryWidget::NativeConstruct()
 	UpdateInventory();
 
 	Cast<UAGGameInstance>(GetGameInstance())->Delegate_InventoryUpdated.AddDynamic(this, &UAGInventoryWidget::UpdateInventory);
+
+	ItemInfoWidget = CreateWidget<UAGItemInfoWidget>(GetOwningPlayer(), ItemInfoWidgetClass);
 }
 
 void UAGInventoryWidget::NativeDestruct()
@@ -77,6 +83,27 @@ void UAGInventoryWidget::NativeDestruct()
 	Super::NativeDestruct();
 
 	Cast<UAGGameInstance>(GetGameInstance())->Delegate_InventoryUpdated.Clear();
+}
+
+void UAGInventoryWidget::EnableItemInfoWidget(const FInventoryItem& Item, FVector2D Position)
+{
+	if (Item.bIsEmpty)
+	{
+		ItemInfoWidget->SetVisibility(ESlateVisibility::Hidden);
+		ItemInfoWidget->RemoveFromParent();
+		return;
+	}
+	
+	ItemInfoWidget->SetItem(Item);
+	ItemInfoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
+	FVector2D PixelPos;
+	FVector2D ViewportPos;
+	USlateBlueprintLibrary::AbsoluteToViewport(GetWorld(), Position, PixelPos, ViewportPos);
+	
+	ItemInfoWidget->SetPositionInViewport(ViewportPos, false);
+	
+	ItemInfoWidget->AddToViewport();
 }
 
 TArray<UAGInventorySlotWidget*> UAGInventoryWidget::GetAllEquipmentSlots() const
@@ -109,7 +136,7 @@ void UAGInventoryWidget::UpdateInventory()
 	{
 		UAGInventorySlotWidget* NewWidget = CreateWidget<UAGInventorySlotWidget>(GetWorld(), InventorySlotClass);
 
-		NewWidget->SetSlot(&GI->GetInventory()[i], i);
+		NewWidget->SetSlot(this, &GI->GetInventory()[i], i);
 
 		UGP_Inventory->AddChildToUniformGrid(NewWidget, Row, Column);
 
@@ -124,7 +151,7 @@ void UAGInventoryWidget::UpdateInventory()
 
 	for (int i = 0; i < GetAllEquipmentSlots().Num(); ++i)
 	{
-		GetAllEquipmentSlots()[i]->SetSlot(&GI->GetAllEquipment()[i], i);
+		GetAllEquipmentSlots()[i]->SetSlot(this, &GI->GetAllEquipment()[i], i);
 		GetAllEquipmentSlots()[i]->SetAsEquipmentSlot(GI->GetAllEquipment()[i].GearType);
 	}
 }

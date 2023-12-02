@@ -7,6 +7,7 @@
 #include "Blueprint/UserWidget.h"
 #include "AGInventorySlotWidget.generated.h"
 
+class UAGInventoryWidget;
 class UOverlay;
 class UImage;
 
@@ -21,7 +22,7 @@ class PROJECT_ACTIONGAME_API UAGInventorySlotWidget : public UUserWidget
 public:
 	UAGInventorySlotWidget(const FObjectInitializer& ObjectInitializer);
 
-	void SetSlot(const FInventoryItem* NewItem, const int& Index);
+	void SetSlot(UAGInventoryWidget* Widget, const FInventoryItem* NewItem, const int& Index);
 
 	void SetAsEquipmentSlot(TEnumAsByte<EGearType> DefaultGearType);
 
@@ -52,6 +53,8 @@ protected:
 
 	void EnableHighlight(bool Enable);
 
+	void EnableItemInfoWidget(bool Enabled);
+	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Slot, meta=(BindWidget))
 	UImage* IMG_Highlight;
@@ -74,4 +77,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category="Slot|Colour")
 	bool bDebugHighlight;
+
+	UPROPERTY()
+	UAGInventoryWidget* InventoryWidget;
 };

@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "AGInventoryWidget.generated.h"
 
+struct FInventoryItem;
+class UAGItemInfoWidget;
 class UUniformGridPanel;
 class UAGInventorySlotWidget;
 class AAGLoot;
@@ -27,12 +29,14 @@ public:
 
 	virtual void NativeDestruct() override;
 
+	void EnableItemInfoWidget(const FInventoryItem& Item, FVector2D Position);
+
 protected:
 	TArray<UAGInventorySlotWidget*> GetAllEquipmentSlots() const;
 
 	UFUNCTION()
 	void UpdateInventory();
-	
+
 public:
 	UPROPERTY(EditDefaultsOnly, Category=Inventory)
 	TSubclassOf<UAGInventorySlotWidget> InventorySlotClass;
@@ -73,4 +77,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Inventory, meta=(BindWidget))
 	UAGInventorySlotWidget* ISW_Weapon;
+
+	UPROPERTY()
+	UAGItemInfoWidget* ItemInfoWidget;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category=Inventory)
+	TSubclassOf<UAGItemInfoWidget> ItemInfoWidgetClass;
+	
 };

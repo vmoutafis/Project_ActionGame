@@ -16,6 +16,11 @@ UAGItemInfoWidget::UAGItemInfoWidget(const FObjectInitializer& ObjectInitializer
 	: Super(ObjectInitializer)
 {
 	ItemInfoClass = UAGItemInfoTextWidget::StaticClass();
+	IMG_Border = nullptr;
+	TXT_Rarity = nullptr;
+	TXT_Value = nullptr;
+	TXT_DisplayName = nullptr;
+	VB_ItemInfo = nullptr;
 }
 
 void UAGItemInfoWidget::NativeConstruct()

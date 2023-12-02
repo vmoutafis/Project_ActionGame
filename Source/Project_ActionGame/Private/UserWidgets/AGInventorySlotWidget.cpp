@@ -6,9 +6,11 @@
 #include "AGGameInstance.h"
 #include "AGHelperFunctions.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Components/CanvasPanelSlot.h"
 #include "Components/Image.h"
 #include "Loot/AGDLootGearWeapon.h"
 #include "Loot/AGLoot.h"
+#include "UserWidgets/AGInventoryWidget.h"
 #include "UserWidgets/DDOs/AGInventorySlotDDO.h"
 
 UAGInventorySlotWidget::UAGInventorySlotWidget(const FObjectInitializer& ObjectInitializer)
@@ -22,11 +24,13 @@ UAGInventorySlotWidget::UAGInventorySlotWidget(const FObjectInitializer& ObjectI
 	NormalTint = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	bDebugHighlight = false;
 	InventoryIndex = -1;
+	InventoryWidget = nullptr;
 }
 
-void UAGInventorySlotWidget::SetSlot(const FInventoryItem* NewItem, const int& Index)
+void UAGInventorySlotWidget::SetSlot(UAGInventoryWidget* Widget, const FInventoryItem* NewItem, const int& Index)
 {
 	InventoryIndex = Index;
+	InventoryWidget = Widget;
 	
 	if (NewItem == nullptr)
 	{
@@ -66,6 +70,8 @@ void UAGInventorySlotWidget::NativeOnMouseEnter(const FGeometry& InGeometry, con
 	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
 
 	EnableHighlight(true);
+
+	EnableItemInfoWidget(true);
 }
 
 void UAGInventorySlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
@@ -73,6 +79,8 @@ void UAGInventorySlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEven
 	Super::NativeOnMouseLeave(InMouseEvent);
 
 	EnableHighlight(false);
+
+	EnableItemInfoWidget(false);
 }
 
 FReply UAGInventorySlotWidget::NativeOnFocusReceived(const FGeometry& InGeometry, const FFocusEvent& InFocusEvent)
@@ -119,7 +127,7 @@ void UAGInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, c
 	Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
 
 	UAGInventorySlotWidget* DragWidget = CreateWidget<UAGInventorySlotWidget>(GetWorld(), this->GetClass());
-	DragWidget->SetSlot(&Item, InventoryIndex);
+	DragWidget->SetSlot(InventoryWidget, &Item, InventoryIndex);
 
 	UAGInventorySlotDDO* DragDrop = NewObject<UAGInventorySlotDDO>();
 	DragDrop->WidgetRef = DragWidget;
@@ -199,6 +207,23 @@ void UAGInventorySlotWidget::EnableHighlight(bool Enable)
 	}
 
 	IMG_Highlight->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UAGInventorySlotWidget::EnableItemInfoWidget(bool Enabled)
+{
+	if (Item.bIsEmpty || !IsValid(InventoryWidget))
+		return;
+
+	if (Enabled)
+	{
+		const FVector2D Position = GetCachedGeometry().GetAbsolutePositionAtCoordinates(FVector2D(0, 0));
+		
+		InventoryWidget->EnableItemInfoWidget(Item, Position);
+
+		return;
+	}
+
+	InventoryWidget->EnableItemInfoWidget(FInventoryItem(), FVector2D());
 }
 
 void UAGInventorySlotWidget::UpdateSlot(const bool& bForceEmpty)
