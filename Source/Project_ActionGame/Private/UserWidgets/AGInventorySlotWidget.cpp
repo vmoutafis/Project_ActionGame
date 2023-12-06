@@ -87,6 +87,8 @@ FReply UAGInventorySlotWidget::NativeOnFocusReceived(const FGeometry& InGeometry
 {
 	EnableHighlight(true);
 
+	EnableItemInfoWidget(true);
+
 	return Super::NativeOnFocusReceived(InGeometry, InFocusEvent);
 }
 
@@ -95,6 +97,8 @@ void UAGInventorySlotWidget::NativeOnFocusLost(const FFocusEvent& InFocusEvent)
 	Super::NativeOnFocusLost(InFocusEvent);
 	
 	EnableHighlight(false);
+
+	EnableItemInfoWidget(false);
 }
 
 FReply UAGInventorySlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry,
