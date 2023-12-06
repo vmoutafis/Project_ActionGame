@@ -107,6 +107,9 @@ void UAGInventoryWidget::EnableItemInfoWidget(const FInventoryItem& Item, FVecto
 	USlateBlueprintLibrary::AbsoluteToViewport(GetWorld(), Position, PixelPos, ViewportPos);
 
 	GetWorld()->GetGameViewport()->GetViewportSize(ViewportSize);
+
+	ViewportPos.Y *= GetWorld()->GetGameViewport()->GetDPIScale();
+	ViewportPos.X *= GetWorld()->GetGameViewport()->GetDPIScale();
 	
 	ViewportPos.Y = FMath::Min(ViewportPos.Y, ViewportSize.Y);
 	ViewportPos.X = ViewportPos.X - WidgetSize.X;
@@ -114,7 +117,6 @@ void UAGInventoryWidget::EnableItemInfoWidget(const FInventoryItem& Item, FVecto
 	UE_LOG(LogTemp, Warning, TEXT("VSize: %f, WSize: %f, WPos: %f"), ViewportSize.Y, WidgetSize.Y, ViewportPos.Y)
 
 	ItemInfoWidget->SetPositionInViewport(ViewportPos, false);
-
 }
 
 TArray<UAGInventorySlotWidget*> UAGInventoryWidget::GetAllEquipmentSlots() const
