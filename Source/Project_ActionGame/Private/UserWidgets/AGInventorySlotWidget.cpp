@@ -220,14 +220,11 @@ void UAGInventorySlotWidget::EnableItemInfoWidget(bool Enabled)
 
 	if (Enabled)
 	{
-		const FVector2D Position = GetCachedGeometry().GetAbsolutePositionAtCoordinates(FVector2D(0, 0));
-		
-		InventoryWidget->EnableItemInfoWidget(Item, Position);
-
+		InventoryWidget->EnableItemInfoWidget(Item, this);
 		return;
 	}
 
-	InventoryWidget->EnableItemInfoWidget(FInventoryItem(), FVector2D());
+	InventoryWidget->EnableItemInfoWidget(FInventoryItem(), this);
 }
 
 void UAGInventorySlotWidget::UpdateSlot(const bool& bForceEmpty)

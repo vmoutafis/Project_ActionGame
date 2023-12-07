@@ -34,6 +34,8 @@ public:
 	void ToggleGameMenu();
 
 	AAG3DWidgetPlayerActor* GetPlayer3DWidget() const { return Player3DWidget; }
+
+	UAGGameMenuWidget* GetGameMenu() const { return GameMenu; }
 	
 protected:
 	virtual void OnPossess(APawn* InPawn) override;

@@ -28,6 +28,8 @@ public:
 	
 	void SetItem(const FInventoryItem& NewItem);
 
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
 protected:
 	FInventoryItem Item;
 

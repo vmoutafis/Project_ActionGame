@@ -29,7 +29,7 @@ public:
 
 	virtual void NativeDestruct() override;
 
-	void EnableItemInfoWidget(const FInventoryItem& Item, FVector2D Position);
+	void EnableItemInfoWidget(const FInventoryItem& Item, UAGInventorySlotWidget* SlotWidget);
 
 protected:
 	TArray<UAGInventorySlotWidget*> GetAllEquipmentSlots() const;

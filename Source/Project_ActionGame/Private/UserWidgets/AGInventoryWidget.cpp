@@ -9,6 +9,7 @@
 #include "Blueprint/SlateBlueprintLibrary.h"
 #include "Components/ScrollBox.h"
 #include "Components/UniformGridPanel.h"
+#include "Slate/SceneViewport.h"
 #include "UserWidgets/AGInventorySlotWidget.h"
 #include "UserWidgets/AGItemInfoWidget.h"
 #include "Weapons/AGWeapon.h"
@@ -85,7 +86,7 @@ void UAGInventoryWidget::NativeDestruct()
 	Cast<UAGGameInstance>(GetGameInstance())->Delegate_InventoryUpdated.Clear();
 }
 
-void UAGInventoryWidget::EnableItemInfoWidget(const FInventoryItem& Item, FVector2D Position)
+void UAGInventoryWidget::EnableItemInfoWidget(const FInventoryItem& Item, UAGInventorySlotWidget* SlotWidget)
 {
 	if (Item.bIsEmpty)
 	{
@@ -93,10 +94,13 @@ void UAGInventoryWidget::EnableItemInfoWidget(const FInventoryItem& Item, FVecto
 		ItemInfoWidget->RemoveFromParent();
 		return;
 	}
-	
+
 	ItemInfoWidget->SetItem(Item);
 	ItemInfoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	ItemInfoWidget->AddToViewport();
+
+	SlotWidget->ForceLayoutPrepass();
+	ForceLayoutPrepass();	
 	ItemInfoWidget->ForceLayoutPrepass();
 	
 	FVector2D PixelPos;
@@ -104,18 +108,11 @@ void UAGInventoryWidget::EnableItemInfoWidget(const FInventoryItem& Item, FVecto
 	FVector2D ViewportSize;
 	const FVector2D WidgetSize = ItemInfoWidget->GetDesiredSize();
 
-	USlateBlueprintLibrary::AbsoluteToViewport(GetWorld(), Position, PixelPos, ViewportPos);
-
+	USlateBlueprintLibrary::AbsoluteToViewport(GetWorld(), SlotWidget->GetCachedGeometry().GetAbsolutePosition(), PixelPos, ViewportPos);
 	GetWorld()->GetGameViewport()->GetViewportSize(ViewportSize);
-
-	ViewportPos.Y *= GetWorld()->GetGameViewport()->GetDPIScale();
-	ViewportPos.X *= GetWorld()->GetGameViewport()->GetDPIScale();
 	
-	ViewportPos.Y = FMath::Min(ViewportPos.Y, ViewportSize.Y);
 	ViewportPos.X = ViewportPos.X - WidgetSize.X;
-
-	UE_LOG(LogTemp, Warning, TEXT("VSize: %f, WSize: %f, WPos: %f"), ViewportSize.Y, WidgetSize.Y, ViewportPos.Y)
-
+	
 	ItemInfoWidget->SetPositionInViewport(ViewportPos, false);
 }
 
