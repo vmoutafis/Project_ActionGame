@@ -97,23 +97,22 @@ void UAGInventoryWidget::EnableItemInfoWidget(const FInventoryItem& Item, UAGInv
 
 	ItemInfoWidget->SetItem(Item);
 	ItemInfoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	ItemInfoWidget->AddToViewport();
+	ItemInfoWidget->AddToPlayerScreen();
 
 	SlotWidget->ForceLayoutPrepass();
 	ForceLayoutPrepass();	
 	ItemInfoWidget->ForceLayoutPrepass();
 	
-	FVector2D PixelPos;
-	FVector2D ViewportPos;
+	FVector2D ViewportPos = SlotWidget->GetCachedGeometry().GetAbsolutePosition();
 	FVector2D ViewportSize;
 	const FVector2D WidgetSize = ItemInfoWidget->GetDesiredSize();
 
-	USlateBlueprintLibrary::AbsoluteToViewport(GetWorld(), SlotWidget->GetCachedGeometry().GetAbsolutePosition(), PixelPos, ViewportPos);
 	GetWorld()->GetGameViewport()->GetViewportSize(ViewportSize);
 	
 	ViewportPos.X = ViewportPos.X - WidgetSize.X;
+	ViewportPos.Y = FMath::Min(ViewportPos.Y, ViewportSize.Y - WidgetSize.Y);
 	
-	ItemInfoWidget->SetPositionInViewport(ViewportPos, false);
+	ItemInfoWidget->SetRenderTranslation(ViewportPos);
 }
 
 TArray<UAGInventorySlotWidget*> UAGInventoryWidget::GetAllEquipmentSlots() const

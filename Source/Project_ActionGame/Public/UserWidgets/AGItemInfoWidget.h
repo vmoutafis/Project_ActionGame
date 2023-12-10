@@ -23,12 +23,10 @@ class PROJECT_ACTIONGAME_API UAGItemInfoWidget : public UUserWidget
 
 public:
 	UAGItemInfoWidget(const FObjectInitializer& ObjectInitializer);
-	
-	virtual void NativeConstruct() override;
-	
-	void SetItem(const FInventoryItem& NewItem);
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	
+	void SetItem(const FInventoryItem& NewItem);
 
 protected:
 	FInventoryItem Item;

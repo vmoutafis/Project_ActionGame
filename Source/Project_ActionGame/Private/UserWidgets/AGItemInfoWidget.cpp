@@ -5,6 +5,7 @@
 
 #include "AGHelperFunctions.h"
 #include "Blueprint/SlateBlueprintLibrary.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
@@ -24,11 +25,10 @@ UAGItemInfoWidget::UAGItemInfoWidget(const FObjectInitializer& ObjectInitializer
 	VB_ItemInfo = nullptr;
 }
 
-void UAGItemInfoWidget::NativeConstruct()
+void UAGItemInfoWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
-	Super::NativeConstruct();
-	
-	SetVisibility(ESlateVisibility::HitTestInvisible);
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
 }
 
 void UAGItemInfoWidget::SetItem(const FInventoryItem& NewItem)
@@ -56,27 +56,15 @@ void UAGItemInfoWidget::SetItem(const FInventoryItem& NewItem)
 	{
 		UAGItemInfoTextWidget* DamageText = CreateWidget<UAGItemInfoTextWidget>(GetOwningPlayer(), ItemInfoClass);
 		const float DamageValue = WeaponLoot->WeaponClass.GetDefaultObject()->GetRarityDamage(Item.Rarity);
-		DamageText->TXT_Text->SetText(FText::FromString(FString("Damage: +") + FString::FromInt(static_cast<int>(DamageValue))));
-		VB_ItemInfo->AddChild(DamageText);
-	}
-}
-
-void UAGItemInfoWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
-
-	FVector2D ViewportSize;
-	const FVector2D WidgetSize = GetPaintSpaceGeometry().GetAbsoluteSize();
-	const FVector2D ViewportPos = GetPaintSpaceGeometry().GetAbsolutePosition();
-
-	GetWorld()->GetGameViewport()->GetViewportSize(ViewportSize);
-	
-	if (ViewportPos.Y > ViewportSize.Y)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Widget: %f, ViewportY: %f"), ViewportPos.Y, ViewportSize.Y);
 		
-		FVector2D NewPosition = ViewportPos;
-		NewPosition.Y = ViewportSize.Y - WidgetSize.Y;
-		SetPositionInViewport(NewPosition, false);
+		if (IsValid(DamageText))
+		{
+			DamageText->TXT_Text->SetText(FText::FromString(FString("Damage: +") + FString::FromInt(static_cast<int>(DamageValue))));
+			VB_ItemInfo->AddChild(DamageText);
+		}
 	}
+
+	FWidgetTransform Transform;
+	Transform.Translation.X = -GetDesiredSize().X;
+	SetRenderTransform(Transform);
 }

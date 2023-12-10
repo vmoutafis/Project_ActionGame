@@ -11,6 +11,7 @@
 #include "Loot/AGDLootGearWeapon.h"
 #include "Loot/AGLoot.h"
 #include "UserWidgets/AGInventoryWidget.h"
+#include "UserWidgets/AGItemInfoWidget.h"
 #include "UserWidgets/DDOs/AGInventorySlotDDO.h"
 
 UAGInventorySlotWidget::UAGInventorySlotWidget(const FObjectInitializer& ObjectInitializer)
@@ -225,6 +226,7 @@ void UAGInventorySlotWidget::EnableItemInfoWidget(bool Enabled)
 	}
 
 	InventoryWidget->EnableItemInfoWidget(FInventoryItem(), this);
+
 }
 
 void UAGInventorySlotWidget::UpdateSlot(const bool& bForceEmpty)

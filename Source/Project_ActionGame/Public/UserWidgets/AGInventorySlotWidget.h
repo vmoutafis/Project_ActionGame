@@ -7,6 +7,7 @@
 #include "Blueprint/UserWidget.h"
 #include "AGInventorySlotWidget.generated.h"
 
+class UAGItemInfoWidget;
 class UAGInventoryWidget;
 class UOverlay;
 class UImage;
