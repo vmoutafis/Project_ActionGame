@@ -7,7 +7,9 @@
 #include "AGGameInstance.h"
 #include "AGHelperFunctions.h"
 #include "Blueprint/SlateBlueprintLibrary.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
 #include "Components/ScrollBox.h"
 #include "Components/UniformGridPanel.h"
 #include "Slate/SceneViewport.h"
@@ -91,27 +93,28 @@ void UAGInventoryWidget::EnableItemInfoWidget(const FInventoryItem& Item, UAGInv
 {
 	if (Item.bIsEmpty)
 	{
+		ItemInfoWidget->SetVisibility(ESlateVisibility::Hidden);
 		ItemInfoWidget->RemoveFromParent();
 		return;
 	}
 
 	ItemInfoWidget->SetItem(Item);
-	ItemInfoWidget->AddToPlayerScreen();
+	ItemInfoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
+	ForceLayoutPrepass();
 	SlotWidget->ForceLayoutPrepass();
-	ForceLayoutPrepass();	
 	ItemInfoWidget->ForceLayoutPrepass();
 	
-	FVector2D ViewportPos = SlotWidget->GetCachedGeometry().GetAbsolutePosition();
 	FVector2D ViewportSize;
-	const FVector2D WidgetSize = ItemInfoWidget->GetDesiredSize();
-
 	GetWorld()->GetGameViewport()->GetViewportSize(ViewportSize);
 	
-	ViewportPos.X = ViewportPos.X - WidgetSize.X;
-	ViewportPos.Y = FMath::Min(ViewportPos.Y, ViewportSize.Y - WidgetSize.Y);
-	
+	const FVector2D ViewportPos = SlotWidget->GetCachedGeometry().GetAbsolutePosition();
+	const FVector2D WidgetSize = ItemInfoWidget->GetCachedGeometry().GetAbsoluteSize();
+
+	ItemInfoWidget->SetAnchorsInViewport(FAnchors(0.5f));
+	ItemInfoWidget->SetDesiredSizeInViewport(WidgetSize);
 	ItemInfoWidget->SetPositionInViewport(ViewportPos);
+	ItemInfoWidget->AddToViewport();
 }
 
 TArray<UAGInventorySlotWidget*> UAGInventoryWidget::GetAllEquipmentSlots() const
