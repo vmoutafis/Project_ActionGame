@@ -6,13 +6,8 @@
 #include "AGDataTypes.h"
 #include "AGGameInstance.h"
 #include "AGHelperFunctions.h"
-#include "Blueprint/SlateBlueprintLibrary.h"
-#include "Blueprint/WidgetLayoutLibrary.h"
-#include "Components/CanvasPanel.h"
-#include "Components/CanvasPanelSlot.h"
 #include "Components/ScrollBox.h"
 #include "Components/UniformGridPanel.h"
-#include "Slate/SceneViewport.h"
 #include "UserWidgets/AGInventorySlotWidget.h"
 #include "UserWidgets/AGItemInfoWidget.h"
 #include "Weapons/AGWeapon.h"
@@ -33,8 +28,7 @@ UAGInventoryWidget::UAGInventoryWidget(const FObjectInitializer& ObjectInitializ
 	ISW_Legs = nullptr;
 	ISW_Feet = nullptr;
 	ISW_Weapon = nullptr;
-	ItemInfoWidget = nullptr;
-	ItemInfoWidgetClass = UAGItemInfoWidget::StaticClass();
+	IIW_ItemInfo = nullptr;
 }
 
 void UAGInventoryWidget::NativePreConstruct()
@@ -78,8 +72,6 @@ void UAGInventoryWidget::NativeConstruct()
 	UpdateInventory();
 
 	Cast<UAGGameInstance>(GetGameInstance())->Delegate_InventoryUpdated.AddDynamic(this, &UAGInventoryWidget::UpdateInventory);
-
-	ItemInfoWidget = CreateWidget<UAGItemInfoWidget>(GetOwningPlayer(), ItemInfoWidgetClass);
 }
 
 void UAGInventoryWidget::NativeDestruct()
@@ -91,30 +83,17 @@ void UAGInventoryWidget::NativeDestruct()
 
 void UAGInventoryWidget::EnableItemInfoWidget(const FInventoryItem& Item, UAGInventorySlotWidget* SlotWidget)
 {
+	if (!IsValid(IIW_ItemInfo))
+		return;
+	
 	if (Item.bIsEmpty)
 	{
-		ItemInfoWidget->SetVisibility(ESlateVisibility::Hidden);
-		ItemInfoWidget->RemoveFromParent();
+		IIW_ItemInfo->SetVisibility(ESlateVisibility::Hidden);
 		return;
 	}
 
-	ItemInfoWidget->SetItem(Item);
-	ItemInfoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-
-	ForceLayoutPrepass();
-	SlotWidget->ForceLayoutPrepass();
-	ItemInfoWidget->ForceLayoutPrepass();
-	
-	FVector2D ViewportSize;
-	GetWorld()->GetGameViewport()->GetViewportSize(ViewportSize);
-	
-	const FVector2D ViewportPos = SlotWidget->GetCachedGeometry().GetAbsolutePosition();
-	const FVector2D WidgetSize = ItemInfoWidget->GetCachedGeometry().GetAbsoluteSize();
-
-	ItemInfoWidget->SetAnchorsInViewport(FAnchors(0.5f));
-	ItemInfoWidget->SetDesiredSizeInViewport(WidgetSize);
-	ItemInfoWidget->SetPositionInViewport(ViewportPos);
-	ItemInfoWidget->AddToViewport();
+	IIW_ItemInfo->SetItem(Item);
+	IIW_ItemInfo->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
 TArray<UAGInventorySlotWidget*> UAGInventoryWidget::GetAllEquipmentSlots() const

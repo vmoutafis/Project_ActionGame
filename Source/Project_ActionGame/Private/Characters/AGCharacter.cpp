@@ -5,6 +5,7 @@
 
 #include "AGDataTypes.h"
 #include "AGHelperFunctions.h"
+#include "AbilitySystem/AGAbilitySystemComponent.h"
 #include "Loot/AGDLootGearWeapon.h"
 #include "Weapons/AGWeapon.h"
 
@@ -201,6 +202,11 @@ void AAGCharacter::BeginPlay()
 bool AAGCharacter::HasWeaponEquipped() const
 {
 	return IsValid(Weapon->GetChildActorClass());
+}
+
+UAbilitySystemComponent* AAGCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
 }
 
 void AAGCharacter::LerpActorRotation(const FRotator& Rotation, const float& Speed)

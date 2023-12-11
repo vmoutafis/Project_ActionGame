@@ -3,13 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "AGCharacter.generated.h"
 
+class UAGAbilitySystemComponent;
 struct FInventoryItem;
 
 UCLASS()
-class PROJECT_ACTIONGAME_API AAGCharacter : public ACharacter
+class PROJECT_ACTIONGAME_API AAGCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -53,6 +55,8 @@ public:
 
 	bool HasWeaponEquipped() const;
 
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
 protected:
 	// Lerp the actor to a new rotation over time
 	// Run CancelActorRotationLerp() to stop
@@ -71,6 +75,9 @@ public:
 	UChildActorComponent* Weapon;
 	
 protected:
+	UPROPERTY(EditDefaultsOnly, Category="Components")
+	UAGAbilitySystemComponent* AbilitySystemComponent;
+	
 	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Weapon")
 	FName WeaponSocketName;
 

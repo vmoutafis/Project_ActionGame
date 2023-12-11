@@ -48,9 +48,6 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Inventory|Debug")
 	int DebugInventoryMaxSlots;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Widgets, meta=(BindWidget))
-	UCanvasPanel* CP_Canvas;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Inventory, meta=(BindWidget))
 	UScrollBox* SB_Inventory;
@@ -83,8 +80,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Inventory, meta=(BindWidget))
 	UAGInventorySlotWidget* ISW_Weapon;
 
-	UPROPERTY()
-	UAGItemInfoWidget* ItemInfoWidget;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Inventory, meta=(BindWidget))
+	UAGItemInfoWidget* IIW_ItemInfo;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category=Inventory)

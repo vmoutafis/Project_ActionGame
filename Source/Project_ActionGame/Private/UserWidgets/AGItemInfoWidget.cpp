@@ -29,7 +29,7 @@ void UAGItemInfoWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 
-	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UAGItemInfoWidget::SetItem(const FInventoryItem& NewItem)
