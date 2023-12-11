@@ -24,7 +24,7 @@ class PROJECT_ACTIONGAME_API UAGItemInfoWidget : public UUserWidget
 public:
 	UAGItemInfoWidget(const FObjectInitializer& ObjectInitializer);
 
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	virtual void NativePreConstruct() override;
 	
 	void SetItem(const FInventoryItem& NewItem);
 
@@ -48,5 +48,4 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Item, meta=(BindWidget))
 	UTextBlock* TXT_Value;
-	
 };

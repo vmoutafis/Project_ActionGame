@@ -25,10 +25,11 @@ UAGItemInfoWidget::UAGItemInfoWidget(const FObjectInitializer& ObjectInitializer
 	VB_ItemInfo = nullptr;
 }
 
-void UAGItemInfoWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+void UAGItemInfoWidget::NativePreConstruct()
 {
-	Super::NativeTick(MyGeometry, InDeltaTime);
+	Super::NativePreConstruct();
 
+	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
 void UAGItemInfoWidget::SetItem(const FInventoryItem& NewItem)
@@ -63,8 +64,4 @@ void UAGItemInfoWidget::SetItem(const FInventoryItem& NewItem)
 			VB_ItemInfo->AddChild(DamageText);
 		}
 	}
-
-	FWidgetTransform Transform;
-	Transform.Translation.X = -GetDesiredSize().X;
-	SetRenderTransform(Transform);
 }

@@ -6,12 +6,14 @@
 #include "Blueprint/UserWidget.h"
 #include "AGInventoryWidget.generated.h"
 
+class UCanvasPanel;
 struct FInventoryItem;
 class UAGItemInfoWidget;
 class UUniformGridPanel;
 class UAGInventorySlotWidget;
 class AAGLoot;
 class UScrollBox;
+
 /**
  * 
  */
@@ -46,6 +48,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Inventory|Debug")
 	int DebugInventoryMaxSlots;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Widgets, meta=(BindWidget))
+	UCanvasPanel* CP_Canvas;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Inventory, meta=(BindWidget))
 	UScrollBox* SB_Inventory;

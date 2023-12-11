@@ -7,6 +7,7 @@
 #include "AGGameInstance.h"
 #include "AGHelperFunctions.h"
 #include "Blueprint/SlateBlueprintLibrary.h"
+#include "Components/CanvasPanel.h"
 #include "Components/ScrollBox.h"
 #include "Components/UniformGridPanel.h"
 #include "Slate/SceneViewport.h"
@@ -90,13 +91,11 @@ void UAGInventoryWidget::EnableItemInfoWidget(const FInventoryItem& Item, UAGInv
 {
 	if (Item.bIsEmpty)
 	{
-		ItemInfoWidget->SetVisibility(ESlateVisibility::Hidden);
 		ItemInfoWidget->RemoveFromParent();
 		return;
 	}
 
 	ItemInfoWidget->SetItem(Item);
-	ItemInfoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	ItemInfoWidget->AddToPlayerScreen();
 
 	SlotWidget->ForceLayoutPrepass();
@@ -112,7 +111,7 @@ void UAGInventoryWidget::EnableItemInfoWidget(const FInventoryItem& Item, UAGInv
 	ViewportPos.X = ViewportPos.X - WidgetSize.X;
 	ViewportPos.Y = FMath::Min(ViewportPos.Y, ViewportSize.Y - WidgetSize.Y);
 	
-	ItemInfoWidget->SetRenderTranslation(ViewportPos);
+	ItemInfoWidget->SetPositionInViewport(ViewportPos);
 }
 
 TArray<UAGInventorySlotWidget*> UAGInventoryWidget::GetAllEquipmentSlots() const

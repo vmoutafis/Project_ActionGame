@@ -226,7 +226,6 @@ void UAGInventorySlotWidget::EnableItemInfoWidget(bool Enabled)
 	}
 
 	InventoryWidget->EnableItemInfoWidget(FInventoryItem(), this);
-
 }
 
 void UAGInventorySlotWidget::UpdateSlot(const bool& bForceEmpty)
