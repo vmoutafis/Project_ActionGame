@@ -4,16 +4,19 @@
 #include "Characters/AGCharacter.h"
 
 #include "AGDataTypes.h"
-#include "AGHelperFunctions.h"
 #include "AbilitySystem/AGAbilitySystemComponent.h"
 #include "Loot/AGDLootGearWeapon.h"
 #include "Weapons/AGWeapon.h"
+#include "AbilitySystem/AGAttributeSet.h"
 
 // Sets default values
 AAGCharacter::AAGCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	AbilitySystemComponent = CreateDefaultSubobject<UAGAbilitySystemComponent>(TEXT("Ability System"));
+	Attributes = AbilitySystemComponent->GetSet<UAGAttributeSet>();
 
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
@@ -209,6 +212,15 @@ UAbilitySystemComponent* AAGCharacter::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
+void AAGCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	
+
+	
+}
+
 void AAGCharacter::LerpActorRotation(const FRotator& Rotation, const float& Speed)
 {
 	CancelActorRotationLerp();
@@ -217,6 +229,19 @@ void AAGCharacter::LerpActorRotation(const FRotator& Rotation, const float& Spee
 	ActorLerpRotationSpeed = Speed;
 
 	GetWorldTimerManager().SetTimer(TH_LerpActorRotation, this, &AAGCharacter::LerpActorRotationTick, 0.01, true);
+}
+
+void AAGCharacter::AbilitySystemInit()
+{
+	if (!ensure(AbilitySystemComponent))
+		return;
+	
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetHealthAttribute()).AddUObject(this, &AAGCharacter::HealthOrShieldChanged);
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxHealthAttribute()).AddUObject(this, &AAGCharacter::HealthOrShieldChanged);
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetShieldAttribute()).AddUObject(this, &AAGCharacter::HealthOrShieldChanged);
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxShieldAttribute()).AddUObject(this, &AAGCharacter::HealthOrShieldChanged);
 }
 
 void AAGCharacter::LerpActorRotationTick()

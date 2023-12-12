@@ -31,6 +31,14 @@ enum EGearType: uint8
 	GT_None UMETA(DisplayName = "None")
 };
 
+UENUM(BlueprintType)
+enum ESpecialDamageTypes: uint8
+{
+	SDT_None = 0 UMETA(DisplayName = "None"),
+	SDT_Fire UMETA(DisplayName = "Fire"),
+	SDT_Frost UMETA(DisplayName = "Frost")
+};
+
 USTRUCT(BlueprintType)
 struct FInventoryItem
 {
