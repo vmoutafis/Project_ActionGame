@@ -83,6 +83,19 @@ void AAGPlayerController::ToggleGameMenu()
 	}
 }
 
+void AAGPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (!IsValid(GameMenu) && IsValid(GameMenuClass))
+		GameMenu = CreateWidget<UAGGameMenuWidget>(this, GameMenuClass);
+	
+	if (!IsValid(PlayerHUD) && IsValid(PlayerHUDClass))
+		PlayerHUD = CreateWidget<UAGPlayerHUDWidget>(this, PlayerHUDClass);
+
+	PlayerHUD->AddToPlayerScreen();
+}
+
 void AAGPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
@@ -96,14 +109,6 @@ void AAGPlayerController::OnPossess(APawn* InPawn)
 		Player3DWidget = GetWorld()->SpawnActor<AAG3DWidgetPlayerActor>(Player3DWidgetClass,
 			FVector(0.0f, 0.0f, 100000.0f), FRotator(0.0f), FActorSpawnParameters());
 	}
-
-	if (!IsValid(GameMenu) && IsValid(GameMenuClass))
-		GameMenu = CreateWidget<UAGGameMenuWidget>(this, GameMenuClass);
-	
-	if (!IsValid(PlayerHUD) && IsValid(PlayerHUDClass))
-		PlayerHUD = CreateWidget<UAGPlayerHUDWidget>(this, PlayerHUDClass);
-
-	PlayerHUD->AddToPlayerScreen();
 }
 
 void AAGPlayerController::HandleMovement(const FInputActionInstance& Action)

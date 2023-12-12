@@ -6,6 +6,13 @@
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/AGAbilitySystemComponent.h"
 
+UAGAttributeSet::UAGAttributeSet()
+{
+	InitHealth(100.0f);
+	InitMaxHealth(100.0f);
+	InitBaseDamage(1.0f);
+}
+
 float UAGAttributeSet::GetLevel() const
 {
 	return Level.GetCurrentValue();
@@ -295,7 +302,7 @@ void UAGAttributeSet::HandleDamage(const FGameplayEffectModCallbackData& Data)
 	
 	float NewHealth = GetHealth();
 	float DamageTaken = Data.EvaluatedData.Magnitude;
-	TEnumAsByte<auto> DamageType = SDT_None;
+	TEnumAsByte<ESpecialDamageTypes> DamageType = SDT_None;
 	float ShieldDamage = 0.0f;
 	float HealthDamage = 0.0f;
 

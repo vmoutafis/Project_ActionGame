@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "AGCharacter.generated.h"
 
+class UAGGameplayEffect;
 struct FOnAttributeChangeData;
 class UAGAttributeSet;
 class UAGAbilitySystemComponent;
@@ -58,17 +59,19 @@ public:
 	bool HasWeaponEquipped() const;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
-	virtual void PossessedBy(AController* NewController) override;
 	
 protected:
 	// Lerp the actor to a new rotation over time
 	// Run CancelActorRotationLerp() to stop
 	void LerpActorRotation(const FRotator& Rotation, const float& Speed);
 
-	void AbilitySystemInit();
-
 	virtual void HealthOrShieldChanged(const FOnAttributeChangeData& Data) {}
+	
+	virtual void ExperienceChanged(const FOnAttributeChangeData& Data) {}
+	
+	virtual void LevelChanged(const FOnAttributeChangeData& Data) {}
+
+	virtual void AbilitySystemInit();
 	
 private:
 	// Is called by LerpActorRotation as a timer to rotate the actor over time
@@ -86,6 +89,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Components")
 	UAGAbilitySystemComponent* AbilitySystemComponent;
 
+	UPROPERTY(EditDefaultsOnly, Category="Custom Character|AbilitySystem")
+	TArray<TSubclassOf<UAGGameplayEffect>> StarterEffects; 
+	
 	UPROPERTY()
 	const UAGAttributeSet* Attributes;
 	

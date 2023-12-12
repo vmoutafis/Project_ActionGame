@@ -36,6 +36,10 @@ public:
 	AAG3DWidgetPlayerActor* GetPlayer3DWidget() const { return Player3DWidget; }
 
 	UAGGameMenuWidget* GetGameMenu() const { return GameMenu; }
+
+	UAGPlayerHUDWidget* GetPlayerHUD() const { return PlayerHUD; }
+
+	virtual void BeginPlay() override;
 	
 protected:
 	virtual void OnPossess(APawn* InPawn) override;

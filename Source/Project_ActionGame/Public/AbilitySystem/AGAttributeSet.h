@@ -15,6 +15,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnExperienceGained, float, Amount);
 /**
  * 
  */
+
 UCLASS()
 class PROJECT_ACTIONGAME_API UAGAttributeSet : public UAttributeSet
 {
@@ -86,6 +87,8 @@ protected:
 	FGameplayAttributeData ApplyFrostDamage;
 	
 public:
+	UAGAttributeSet();
+	
 	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(UAGAttributeSet, Level);
 	float GetLevel() const;
 	void SetLevel(float NewVal);
@@ -172,7 +175,7 @@ public:
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(ApplyFrostDamage);
 
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
-	
+
 protected:
 	virtual bool TryLevelUp();
 

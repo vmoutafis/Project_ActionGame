@@ -6,6 +6,7 @@
 #include "Characters/AGCharacter.h"
 #include "AGPlayerCharacter.generated.h"
 
+class UAGPlayerHUDWidget;
 class USphereComponent;
 class AAGWeapon;
 class UTimelineComponent;
@@ -30,12 +31,32 @@ public:
 	
 protected:
 	UFUNCTION()
-	void OnLootColliderOverlaped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	void OnLootColliderOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
 	void OnLootColliderEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-	
+
+	virtual void HealthOrShieldChanged(const FOnAttributeChangeData& Data) override;
+
+	virtual void ExperienceChanged(const FOnAttributeChangeData& Data) override;
+
+	virtual void LevelChanged(const FOnAttributeChangeData& Data) override;
+
+	UAGPlayerHUDWidget* GetPlayerHUD() const;
+
+	void UpdateHealthUI();
+
+	void UpdateShieldUI();
+
+	void UpdateExperienceUI();
+
+	void UpdateLevelUI();
+
+	void UpdateAllUI();
+
+	virtual void AbilitySystemInit() override;
+
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
 	USpringArmComponent* SpringArm;

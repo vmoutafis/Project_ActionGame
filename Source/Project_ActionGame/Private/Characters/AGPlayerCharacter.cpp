@@ -4,13 +4,18 @@
 #include "Characters/AGPlayerCharacter.h"
 
 #include "AGCustomObjectTraceChannels.h"
+#include "AGHelperFunctions.h"
 #include "AGPlayerController.h"
+#include "GameplayEffectTypes.h"
 #include "3DWidgetActors/AG3DWidgetPlayerActor.h"
+#include "AbilitySystem/AGAttributeSet.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Loot/AGLoot.h"
+#include "UserWidgets/AGPlayerHealthWidget.h"
+#include "UserWidgets/AGPlayerHUDWidget.h"
 #include "Weapons/AGWeapon.h"
 
 AAGPlayerCharacter::AAGPlayerCharacter()
@@ -40,7 +45,7 @@ void AAGPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	LootCollider->OnComponentBeginOverlap.AddDynamic(this, &AAGPlayerCharacter::OnLootColliderOverlaped);
+	LootCollider->OnComponentBeginOverlap.AddDynamic(this, &AAGPlayerCharacter::OnLootColliderOverlapped);
 	LootCollider->OnComponentEndOverlap.AddDynamic(this, &AAGPlayerCharacter::OnLootColliderEndOverlap);
 }
 
@@ -78,7 +83,7 @@ void AAGPlayerCharacter::EquipWeapon(const FInventoryItem* Item)
 		Cast<AAGPlayerController>(GetController())->GetPlayer3DWidget()->SetWeapon(WeaponMesh);
 }
 
-void AAGPlayerCharacter::OnLootColliderOverlaped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+void AAGPlayerCharacter::OnLootColliderOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                                  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	AAGLoot* LootItem = Cast<AAGLoot>(OtherActor);
@@ -98,4 +103,114 @@ void AAGPlayerCharacter::OnLootColliderEndOverlap(UPrimitiveComponent* Overlappe
 		return;
 	
 	LootItem->EnableCollectUI(false);
+}
+
+void AAGPlayerCharacter::HealthOrShieldChanged(const FOnAttributeChangeData& Data)
+{
+	Super::HealthOrShieldChanged(Data);
+
+	if (Data.Attribute == Attributes->GetHealthAttribute() ||
+		Data.Attribute == Attributes->GetMaxHealthAttribute())
+		UpdateHealthUI();
+
+	if (Data.Attribute == Attributes->GetShieldAttribute() ||
+		Data.Attribute == Attributes->GetMaxShieldAttribute())
+		UpdateShieldUI();
+}
+
+void AAGPlayerCharacter::ExperienceChanged(const FOnAttributeChangeData& Data)
+{
+	Super::ExperienceChanged(Data);
+
+	UpdateExperienceUI();
+}
+
+void AAGPlayerCharacter::LevelChanged(const FOnAttributeChangeData& Data)
+{
+	Super::LevelChanged(Data);
+
+	UpdateLevelUI();
+}
+
+UAGPlayerHUDWidget* AAGPlayerCharacter::GetPlayerHUD() const
+{
+	const AAGPlayerController* PC = Cast<AAGPlayerController>(GetController());
+
+	if (!IsValid(PC))
+		return nullptr;
+
+	if (!IsValid(PC->GetPlayerHUD()))
+		UAGHelperFunctions::AGSimpleWarning("Player HUD not found.");
+
+	return PC->GetPlayerHUD();
+}
+
+void AAGPlayerCharacter::UpdateHealthUI()
+{
+	if (!IsValid(GetPlayerHUD()))
+		return;
+
+	if (!IsValid(GetPlayerHUD()->GetPlayerHealthWidget()))
+		return;
+
+	if (IsValid(Attributes))
+		GetPlayerHUD()->GetPlayerHealthWidget()->SetHealth(Attributes->GetHealth(), Attributes->GetMaxHealth());
+}
+
+void AAGPlayerCharacter::UpdateShieldUI()
+{
+	if (!IsValid(GetPlayerHUD()))
+		return;
+
+	if (!IsValid(GetPlayerHUD()->GetPlayerHealthWidget()))
+		return;
+
+	if (IsValid(Attributes))
+		GetPlayerHUD()->GetPlayerHealthWidget()->SetShield(Attributes->GetShield(), Attributes->GetMaxShield());
+}
+
+void AAGPlayerCharacter::UpdateExperienceUI()
+{
+	if (!IsValid(GetPlayerHUD()))
+		return;
+
+	if (!IsValid(GetPlayerHUD()->GetPlayerHealthWidget()))
+		return;
+
+	if (IsValid(Attributes))
+		GetPlayerHUD()->GetPlayerHealthWidget()->SetExperience(Attributes->GetExperience(), Attributes->GetMaxExperience());
+}
+
+void AAGPlayerCharacter::UpdateLevelUI()
+{
+	if (!IsValid(GetPlayerHUD()))
+		return;
+
+	if (!IsValid(GetPlayerHUD()->GetPlayerHealthWidget()))
+		return;
+
+	if (IsValid(Attributes))
+		GetPlayerHUD()->GetPlayerHealthWidget()->SetLevel(Attributes->GetLevel());
+}
+
+void AAGPlayerCharacter::UpdateAllUI()
+{
+	if (!IsValid(GetPlayerHUD()))
+	{
+		FTimerHandle HUDTimer;
+		GetWorld()->GetTimerManager().SetTimer(HUDTimer, this, &AAGPlayerCharacter::UpdateAllUI, 0.1f);
+		return;
+	}
+	
+	UpdateHealthUI();
+	UpdateShieldUI();
+	UpdateExperienceUI();
+	UpdateLevelUI();
+}
+
+void AAGPlayerCharacter::AbilitySystemInit()
+{
+	Super::AbilitySystemInit();
+
+	UpdateAllUI();
 }

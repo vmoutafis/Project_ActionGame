@@ -8,6 +8,7 @@
 #include "Loot/AGDLootGearWeapon.h"
 #include "Weapons/AGWeapon.h"
 #include "AbilitySystem/AGAttributeSet.h"
+#include "AbilitySystem/AGGameplayEffect.h"
 
 // Sets default values
 AAGCharacter::AAGCharacter()
@@ -16,7 +17,7 @@ AAGCharacter::AAGCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	AbilitySystemComponent = CreateDefaultSubobject<UAGAbilitySystemComponent>(TEXT("Ability System"));
-	Attributes = AbilitySystemComponent->GetSet<UAGAttributeSet>();
+	Attributes = CreateDefaultSubobject<UAGAttributeSet>(TEXT("Attributes"));
 
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
@@ -199,6 +200,8 @@ void AAGCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	AbilitySystemInit();
+
 	EquipWeapon(nullptr);
 }
 
@@ -212,15 +215,6 @@ UAbilitySystemComponent* AAGCharacter::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-void AAGCharacter::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
-
-	
-
-	
-}
-
 void AAGCharacter::LerpActorRotation(const FRotator& Rotation, const float& Speed)
 {
 	CancelActorRotationLerp();
@@ -228,7 +222,7 @@ void AAGCharacter::LerpActorRotation(const FRotator& Rotation, const float& Spee
 	FinalActorLerpRotation = Rotation;
 	ActorLerpRotationSpeed = Speed;
 
-	GetWorldTimerManager().SetTimer(TH_LerpActorRotation, this, &AAGCharacter::LerpActorRotationTick, 0.01, true);
+	GetWorldTimerManager().SetTimer(TH_LerpActorRotation, this, &AAGCharacter::LerpActorRotationTick, 0.01f, true);
 }
 
 void AAGCharacter::AbilitySystemInit()
@@ -238,10 +232,23 @@ void AAGCharacter::AbilitySystemInit()
 	
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 
+	for (auto Effect : StarterEffects)
+	{
+		const FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
+		const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(Effect, 0.0f, ContextHandle);
+
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	}
+	
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetHealthAttribute()).AddUObject(this, &AAGCharacter::HealthOrShieldChanged);
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxHealthAttribute()).AddUObject(this, &AAGCharacter::HealthOrShieldChanged);
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetShieldAttribute()).AddUObject(this, &AAGCharacter::HealthOrShieldChanged);
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxShieldAttribute()).AddUObject(this, &AAGCharacter::HealthOrShieldChanged);
+	
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxExperienceAttribute()).AddUObject(this, &AAGCharacter::ExperienceChanged);
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetExperienceAttribute()).AddUObject(this, &AAGCharacter::ExperienceChanged);
+	
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetLevelAttribute()).AddUObject(this, &AAGCharacter::LevelChanged);
 }
 
 void AAGCharacter::LerpActorRotationTick()

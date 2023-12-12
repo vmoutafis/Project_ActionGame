@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "AGPlayerHUDWidget.generated.h"
 
+class UAGPlayerHealthWidget;
 class UScrollBox;
 class UAGItemCollectWidget;
 struct FInventoryItem;
@@ -27,6 +28,8 @@ public:
 
 	UFUNCTION()
 	void CollectItem(FInventoryItem Item);
+
+	UAGPlayerHealthWidget* GetPlayerHealthWidget() const { return PHW_PlayerHealth; }
 	
 protected:
 	UFUNCTION()
@@ -52,4 +55,7 @@ protected:
 	FTimerHandle TH_AddItemToCollected;
 
 	bool TempCollectItemsSet;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerHealth", meta=(BindWidget))
+	UAGPlayerHealthWidget* PHW_PlayerHealth;
 };
