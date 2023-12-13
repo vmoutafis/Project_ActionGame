@@ -57,6 +57,8 @@ private:
 	
 	void HandleGameMenu(const FInputActionInstance& Action);
 
+	void HandleJump(const FInputActionInstance& Action);
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="Input|IMC")
 	TSoftObjectPtr<UInputMappingContext> IMC_Locomotion;
@@ -75,6 +77,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Input|Actions")
 	UInputAction* IA_Movement;
+
+	UPROPERTY(EditDefaultsOnly, Category="Input|Actions")
+	UInputAction* IA_Jump;
 
 	UPROPERTY(EditDefaultsOnly, Category="Input|Actions")
 	UInputAction* IA_Camera;

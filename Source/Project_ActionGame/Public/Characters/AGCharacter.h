@@ -61,7 +61,11 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	const UAGAttributeSet* GetAttributes() const { return Attributes; }
-	
+
+	virtual void TryJump(const bool& bPressed = true);
+
+	virtual void Landed(const FHitResult& Hit) override;
+
 protected:
 	// Lerp the actor to a new rotation over time
 	// Run CancelActorRotationLerp() to stop
@@ -112,6 +116,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations")
 	TArray<UAnimMontage*> BasicAttackAnims;
+
+	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations")
+	TArray<UAnimMontage*> BasicAttackAirAnims;
 
 	int BasicAttackCombo;
 

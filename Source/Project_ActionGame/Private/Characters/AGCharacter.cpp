@@ -9,6 +9,7 @@
 #include "Weapons/AGWeapon.h"
 #include "AbilitySystem/AGAttributeSet.h"
 #include "AbilitySystem/AGGameplayEffect.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AAGCharacter::AAGCharacter()
@@ -144,7 +145,7 @@ void AAGCharacter::UnsheathWeapon(const bool& bInstant)
 
 bool AAGCharacter::TryBasicAttack()
 {
-	if (bIsBasicAttacking || !BasicAttackAnims.IsValidIndex(BasicAttackCombo) || !HasWeaponEquipped())
+	if (bIsBasicAttacking || !HasWeaponEquipped())
 		return false;
 
 	if (!IsWeaponUnsheathed())
@@ -152,7 +153,17 @@ bool AAGCharacter::TryBasicAttack()
 
 	bIsBasicAttacking = true;
 
-	const float AnimLength = PlayAnimMontage(BasicAttackAnims[BasicAttackCombo]);
+	float AnimLength = 0.0f;
+
+	if (!GetCharacterMovement()->IsFalling() && BasicAttackAnims.IsValidIndex(BasicAttackCombo))
+		AnimLength = PlayAnimMontage(BasicAttackAnims[BasicAttackCombo]);
+	else if (GetCharacterMovement()->IsFalling() && BasicAttackAirAnims.IsValidIndex(BasicAttackCombo))
+		AnimLength = PlayAnimMontage(BasicAttackAirAnims[BasicAttackCombo]);
+
+	if (AnimLength <= 0.0f) {
+		EndBasicAttackCombo();
+		return false;
+	}
 	
 	GetWorldTimerManager().SetTimer(TH_BasicAttackTimer, this, &AAGCharacter::EndBasicAttackCombo, AnimLength);
 
@@ -213,6 +224,27 @@ bool AAGCharacter::HasWeaponEquipped() const
 UAbilitySystemComponent* AAGCharacter::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+void AAGCharacter::TryJump(const bool& bPressed)
+{
+	if (bIsBasicAttacking)
+		return;
+
+	if (!GetCharacterMovement()->IsFalling())
+	{
+		ForceCancelAttack();
+		Jump();
+	}
+	else
+		StopJumping();
+}
+
+void AAGCharacter::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+
+	EndBasicAttackCombo();
 }
 
 void AAGCharacter::LerpActorRotation(const FRotator& Rotation, const float& Speed)

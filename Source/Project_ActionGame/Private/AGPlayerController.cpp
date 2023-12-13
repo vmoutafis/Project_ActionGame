@@ -3,6 +3,7 @@
 
 #include "AGPlayerController.h"
 
+#include "AGHelperFunctions.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
@@ -58,6 +59,8 @@ void AAGPlayerController::SetupInputComponent()
 	Input->BindAction(IA_Movement, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleMovement);
 	Input->BindAction(IA_Movement, ETriggerEvent::Canceled, this, &AAGPlayerController::HandleMovement);
 	Input->BindAction(IA_Movement, ETriggerEvent::Completed, this, &AAGPlayerController::HandleMovement);
+	
+	Input->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleJump);
 	
 	Input->BindAction(IA_Camera, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleCamera);
 	Input->BindAction(IA_BasicAttack, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleBasicAttack);
@@ -160,8 +163,6 @@ void AAGPlayerController::HandleInteract(const FInputActionInstance& Action)
 	
 	if (const bool bPressed = Action.GetValue().Get<bool>())
 		PlayerRef->TryInteract();
-
-	UE_LOG(LogTemp, Warning, TEXT("Interact pressed."))
 }
 
 void AAGPlayerController::HandleGameMenu(const FInputActionInstance& Action)
@@ -171,4 +172,12 @@ void AAGPlayerController::HandleGameMenu(const FInputActionInstance& Action)
 	
 	if (const bool bPressed = Action.GetValue().Get<bool>())
 		ToggleGameMenu();
+}
+
+void AAGPlayerController::HandleJump(const FInputActionInstance& Action)
+{
+	if (!IsValid(PlayerRef))
+		return;
+	
+	PlayerRef->TryJump(Action.GetValue().Get<bool>());
 }

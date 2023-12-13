@@ -39,6 +39,9 @@ AAGPlayerCharacter::AAGPlayerCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	bUseControllerRotationYaw = false;
+
+	GetCharacterMovement()->JumpZVelocity = 720.0f;
+	GetCharacterMovement()->GravityScale = 1.5f;
 }
 
 void AAGPlayerCharacter::BeginPlay()
