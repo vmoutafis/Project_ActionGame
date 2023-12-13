@@ -6,10 +6,12 @@
 #include "Blueprint/UserWidget.h"
 #include "AGPlayerHUDWidget.generated.h"
 
+struct FOnAttributeChangeData;
 class UAGPlayerHealthWidget;
 class UScrollBox;
 class UAGItemCollectWidget;
 struct FInventoryItem;
+class UAGAbilitySystemComponent;
 
 /**
  * 
@@ -26,6 +28,8 @@ public:
 	
 	virtual void NativeConstruct() override;
 
+	virtual void NativeDestruct() override;
+	
 	UFUNCTION()
 	void CollectItem(FInventoryItem Item);
 
@@ -41,6 +45,27 @@ protected:
 	UFUNCTION()
 	void ScrollNextCollectedItem();
 
+	UFUNCTION()
+	void UpdateHealth(float Current, float Max);
+
+	UFUNCTION()
+	void UpdateShield(float Current, float Max);
+
+	UFUNCTION()
+	void UpdateLevel(float Current, float Max);
+
+	UFUNCTION()
+	void UpdateExperience(float Current, float Max);
+
+	void UpdateHealthWidget();
+
+	void InitialiseHealthWidget();
+
+	UFUNCTION()
+	void InitialiseAbilitySystem();
+
+	void OnAbilitySystemInit();
+	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category=ItemCollect)
 	TSubclassOf<UAGItemCollectWidget> ItemCollectWidgetClass;
@@ -49,13 +74,17 @@ protected:
 	UScrollBox* SB_ItemCollect;
 
 	TArray<FInventoryItem> CollectedItems;
-	
-	FTimerHandle TH_RemoveCollectedItem;
-	FTimerHandle TH_ScrollNextCollectedItem;
-	FTimerHandle TH_AddItemToCollected;
 
 	bool TempCollectItemsSet;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerHealth", meta=(BindWidget))
 	UAGPlayerHealthWidget* PHW_PlayerHealth;
+
+	UPROPERTY()
+	UAGAbilitySystemComponent* AbilitySystemComponent;
+
+	FTimerHandle TH_RemoveCollectedItem;
+	FTimerHandle TH_ScrollNextCollectedItem;
+	FTimerHandle TH_AddItemToCollected;
+	FTimerHandle TH_InitHealthWidget;
 };

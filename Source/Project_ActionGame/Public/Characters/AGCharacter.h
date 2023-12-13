@@ -59,18 +59,14 @@ public:
 	bool HasWeaponEquipped() const;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	const UAGAttributeSet* GetAttributes() const { return Attributes; }
 	
 protected:
 	// Lerp the actor to a new rotation over time
 	// Run CancelActorRotationLerp() to stop
 	void LerpActorRotation(const FRotator& Rotation, const float& Speed);
-
-	virtual void HealthOrShieldChanged(const FOnAttributeChangeData& Data) {}
 	
-	virtual void ExperienceChanged(const FOnAttributeChangeData& Data) {}
-	
-	virtual void LevelChanged(const FOnAttributeChangeData& Data) {}
-
 	virtual void AbilitySystemInit();
 	
 private:

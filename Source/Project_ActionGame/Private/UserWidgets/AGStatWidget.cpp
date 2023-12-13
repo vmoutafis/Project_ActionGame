@@ -17,7 +17,7 @@ UAGStatWidget::UAGStatWidget(const FObjectInitializer& ObjectInitializer)
 void UAGStatWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
-
+	
 	if (IsValid(TXT_Title))
 		TXT_Title->SetText(FText::FromString(TitleText));
 
@@ -29,5 +29,5 @@ void UAGStatWidget::SetValue(const float& Value)
 	if (!IsValid(TXT_Value))
 		return;
 	
-	TXT_Value->SetText(FText::FromString(FString::FromInt(static_cast<int>(Value))));
+	TXT_Value->SetText(FText::FromString(FString::FromInt(FMath::TruncToInt(Value))));
 }

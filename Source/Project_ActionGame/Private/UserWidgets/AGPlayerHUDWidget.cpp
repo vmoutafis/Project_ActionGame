@@ -6,15 +6,21 @@
 #include "AGDataTypes.h"
 #include "AGGameInstance.h"
 #include "Animation/UMGSequencePlayer.h"
+#include "Characters/AGCharacter.h"
 #include "Components/ScrollBox.h"
 #include "Loot/AGLoot.h"
 #include "UserWidgets/AGItemCollectWidget.h"
+#include "AbilitySystem/AGAbilitySystemComponent.h"
+#include "AbilitySystem/AGAttributeSet.h"
+#include "UserWidgets/AGPlayerHealthWidget.h"
 
 UAGPlayerHUDWidget::UAGPlayerHUDWidget(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	SB_ItemCollect = nullptr;
 	TempCollectItemsSet = false;
+	AbilitySystemComponent = nullptr;
+	PHW_PlayerHealth = nullptr;
 }
 
 void UAGPlayerHUDWidget::NativePreConstruct()
@@ -50,6 +56,20 @@ void UAGPlayerHUDWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	Cast<UAGGameInstance>(GetGameInstance())->Delegate_LootCollected.AddDynamic(this, &UAGPlayerHUDWidget::CollectItem);
+	
+	InitialiseAbilitySystem();
+}
+
+void UAGPlayerHUDWidget::NativeDestruct()
+{
+	Super::NativeDestruct();
+
+	AbilitySystemComponent->Delegate_OnHealthChanged.Clear();
+	AbilitySystemComponent->Delegate_OnShieldChanged.Clear();
+	AbilitySystemComponent->Delegate_OnExperienceChanged.Clear();
+	AbilitySystemComponent->Delegate_OnLevelChanged.Clear();
+
+	GetWorld()->GetTimerManager().ClearTimer(TH_InitHealthWidget);
 }
 
 void UAGPlayerHUDWidget::CollectItem(FInventoryItem Item)
@@ -96,6 +116,83 @@ void UAGPlayerHUDWidget::ScrollNextCollectedItem()
 	Cast<UAGItemCollectWidget>(SB_ItemCollect->GetChildAt(0))->PlayDisappearAnim();
 
 	GetWorld()->GetTimerManager().SetTimer(TH_ScrollNextCollectedItem, this, &UAGPlayerHUDWidget::ScrollNextCollectedItem, 2.0f);
-	
 	GetWorld()->GetTimerManager().SetTimer(TH_RemoveCollectedItem, this, &UAGPlayerHUDWidget::RemoveCollectedItem, 1.0f);
+}
+
+void UAGPlayerHUDWidget::UpdateHealth(float Current, float Max)
+{
+	GetPlayerHealthWidget()->SetHealth(Current, Max);
+}
+
+void UAGPlayerHUDWidget::UpdateShield(float Current, float Max)
+{
+	GetPlayerHealthWidget()->SetShield(Current, Max);
+}
+
+void UAGPlayerHUDWidget::UpdateLevel(float Current, float Max)
+{
+	GetPlayerHealthWidget()->SetLevel(Current);
+}
+
+void UAGPlayerHUDWidget::UpdateExperience(float Current, float Max)
+{
+	GetPlayerHealthWidget()->SetHealth(Current, Max);
+}
+
+void UAGPlayerHUDWidget::UpdateHealthWidget()
+{
+	if (!IsValid(AbilitySystemComponent))
+		return;
+	
+	const UAGAttributeSet* Attrib = AbilitySystemComponent->GetOwnerAttributes();
+	
+	UpdateHealth(Attrib->GetHealth(), Attrib->GetMaxHealth());
+	UpdateShield(Attrib->GetShield(), Attrib->GetMaxShield());
+	UpdateLevel(Attrib->GetLevel(), Attrib->GetMaxLevel());
+	UpdateExperience(Attrib->GetExperience(), Attrib->GetMaxExperience());
+}
+
+void UAGPlayerHUDWidget::InitialiseHealthWidget()
+{
+	if (!IsValid(AbilitySystemComponent))
+		return;
+	
+	AbilitySystemComponent->Delegate_OnHealthChanged.AddDynamic(this, &UAGPlayerHUDWidget::UpdateHealth);
+	AbilitySystemComponent->Delegate_OnShieldChanged.AddDynamic(this, &UAGPlayerHUDWidget::UpdateShield);
+	AbilitySystemComponent->Delegate_OnExperienceChanged.AddDynamic(this, &UAGPlayerHUDWidget::UpdateExperience);
+	AbilitySystemComponent->Delegate_OnLevelChanged.AddDynamic(this, &UAGPlayerHUDWidget::UpdateLevel);
+
+	UpdateHealthWidget();
+}
+
+void UAGPlayerHUDWidget::InitialiseAbilitySystem()
+{
+	if (IsValid(AbilitySystemComponent))
+	{
+		OnAbilitySystemInit();
+		return;
+	}
+	
+	const AAGCharacter* CharRef = Cast<AAGCharacter>(GetOwningPlayer()->GetPawn());
+	
+	if (!IsValid(CharRef))
+	{
+		GetWorld()->GetTimerManager().SetTimer(TH_InitHealthWidget, this, &UAGPlayerHUDWidget::InitialiseAbilitySystem, 0.1f);
+		return;
+	}
+
+	AbilitySystemComponent = Cast<UAGAbilitySystemComponent>(CharRef->GetAbilitySystemComponent());
+
+	if (!IsValid(AbilitySystemComponent))
+	{
+		GetWorld()->GetTimerManager().SetTimer(TH_InitHealthWidget, this, &UAGPlayerHUDWidget::InitialiseAbilitySystem, 0.1f);
+		return;
+	}
+
+	OnAbilitySystemInit();
+}
+
+void UAGPlayerHUDWidget::OnAbilitySystemInit()
+{
+	InitialiseHealthWidget();
 }

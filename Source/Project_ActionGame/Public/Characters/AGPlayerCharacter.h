@@ -37,12 +37,6 @@ protected:
 	UFUNCTION()
 	void OnLootColliderEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	virtual void HealthOrShieldChanged(const FOnAttributeChangeData& Data) override;
-
-	virtual void ExperienceChanged(const FOnAttributeChangeData& Data) override;
-
-	virtual void LevelChanged(const FOnAttributeChangeData& Data) override;
-
 	UAGPlayerHUDWidget* GetPlayerHUD() const;
 
 	void UpdateHealthUI();

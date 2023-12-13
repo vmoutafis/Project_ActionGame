@@ -238,17 +238,7 @@ void AAGCharacter::AbilitySystemInit()
 		const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(Effect, 0.0f, ContextHandle);
 
 		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-	}
-	
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetHealthAttribute()).AddUObject(this, &AAGCharacter::HealthOrShieldChanged);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxHealthAttribute()).AddUObject(this, &AAGCharacter::HealthOrShieldChanged);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetShieldAttribute()).AddUObject(this, &AAGCharacter::HealthOrShieldChanged);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxShieldAttribute()).AddUObject(this, &AAGCharacter::HealthOrShieldChanged);
-	
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxExperienceAttribute()).AddUObject(this, &AAGCharacter::ExperienceChanged);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetExperienceAttribute()).AddUObject(this, &AAGCharacter::ExperienceChanged);
-	
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetLevelAttribute()).AddUObject(this, &AAGCharacter::LevelChanged);
+	}	
 }
 
 void AAGCharacter::LerpActorRotationTick()

@@ -6,6 +6,11 @@
 #include "Blueprint/UserWidget.h"
 #include "AGInventoryWidget.generated.h"
 
+class UAGStatIconWidget;
+class UAGStatWidget;
+struct FGameplayAttribute;
+class UTextBlock;
+class UAGAbilitySystemComponent;
 class UCanvasPanel;
 struct FInventoryItem;
 class UAGItemInfoWidget;
@@ -39,7 +44,24 @@ protected:
 	UFUNCTION()
 	void UpdateInventory();
 
+	UFUNCTION()
+	void InitialiseAbilitySystem();
+	
+	void OnAbilitySystemInit();
+
+	UFUNCTION()
+	void OnStatChange(const FGameplayAttribute& Attribute, float Value);
+
+	void SetDamageText(const FGameplayAttribute& Attribute, float Value);
+
+	void SetLevelText(float Value);
+
+	void UpdateAllStats();
+
 public:
+	UPROPERTY(EditDefaultsOnly, Category="Stats")
+	FString LevelText;
+	
 	UPROPERTY(EditDefaultsOnly, Category=Inventory)
 	TSubclassOf<UAGInventorySlotWidget> InventorySlotClass;
 	
@@ -83,8 +105,38 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Inventory, meta=(BindWidget))
 	UAGItemInfoWidget* IIW_ItemInfo;
 
+	// Stat text
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category="Stats", meta=(BindWidget))
+	UAGStatWidget* STAT_MaxHealth;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category="Stats", meta=(BindWidget))
+	UAGStatWidget* STAT_Armour;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category="Stats", meta=(BindWidget))
+	UAGStatWidget* STAT_MaxShield;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category="Stats", meta=(BindWidget))
+	UTextBlock* TXT_Level;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category="Stats", meta=(BindWidget))
+	UAGStatWidget* STAT_Damage;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category="Stats", meta=(BindWidget))
+	UAGStatWidget* STAT_MagicResist;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category="Stats", meta=(BindWidget))
+	UAGStatIconWidget* STATICO_FireDamage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category="Stats", meta=(BindWidget))
+	UAGStatIconWidget* STATICO_FrostDamage;
+	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category=Inventory)
 	TSubclassOf<UAGItemInfoWidget> ItemInfoWidgetClass;
+
+	UPROPERTY()
+	UAGAbilitySystemComponent* AbilitySystemComponent;
+
+	FTimerHandle TH_InitAbilitySystem;
 	
 };

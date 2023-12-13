@@ -6,6 +6,14 @@
 #include "AbilitySystemComponent.h"
 #include "AGAbilitySystemComponent.generated.h"
 
+class UAGAttributeSet;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChanged, float, Current, float, Max);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnShieldChanged, float, Current, float, Max);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnExperienceChanged, float, Current, float, Max);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLevelChanged, float, Current, float, Max);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAnyStatChanged, const FGameplayAttribute&, Attribute, float, Value);
+
 /**
  * 
  */
@@ -13,5 +21,35 @@ UCLASS()
 class PROJECT_ACTIONGAME_API UAGAbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
+
+public:
+	virtual void BeginPlay() override;
+
+	// when max or current health changes
+	FOnHealthChanged Delegate_OnHealthChanged;
 	
+	// when max or current shield changes
+	FOnHealthChanged Delegate_OnShieldChanged;
+
+	// when experience updates (experience or max experience)
+	FOnExperienceChanged Delegate_OnExperienceChanged;
+
+	// if the level has changed (level or max level)
+	FOnLevelChanged Delegate_OnLevelChanged;
+
+	// Stats are the any number that can change (e.g. max health, magic resist, armour, etc...)
+	FOnAnyStatChanged Delegate_OnAnyStatChanged;
+
+	const UAGAttributeSet* GetOwnerAttributes() const;
+	
+protected:
+	void HealthChanged(const FOnAttributeChangeData& Data);
+	
+	void ShieldChanged(const FOnAttributeChangeData& Data);
+
+	void ExperienceChanged(const FOnAttributeChangeData& Data);
+
+	void LevelChanged(const FOnAttributeChangeData& Data);
+
+	void StatsChanged(const FOnAttributeChangeData& Data);
 };

@@ -105,33 +105,6 @@ void AAGPlayerCharacter::OnLootColliderEndOverlap(UPrimitiveComponent* Overlappe
 	LootItem->EnableCollectUI(false);
 }
 
-void AAGPlayerCharacter::HealthOrShieldChanged(const FOnAttributeChangeData& Data)
-{
-	Super::HealthOrShieldChanged(Data);
-
-	if (Data.Attribute == Attributes->GetHealthAttribute() ||
-		Data.Attribute == Attributes->GetMaxHealthAttribute())
-		UpdateHealthUI();
-
-	if (Data.Attribute == Attributes->GetShieldAttribute() ||
-		Data.Attribute == Attributes->GetMaxShieldAttribute())
-		UpdateShieldUI();
-}
-
-void AAGPlayerCharacter::ExperienceChanged(const FOnAttributeChangeData& Data)
-{
-	Super::ExperienceChanged(Data);
-
-	UpdateExperienceUI();
-}
-
-void AAGPlayerCharacter::LevelChanged(const FOnAttributeChangeData& Data)
-{
-	Super::LevelChanged(Data);
-
-	UpdateLevelUI();
-}
-
 UAGPlayerHUDWidget* AAGPlayerCharacter::GetPlayerHUD() const
 {
 	const AAGPlayerController* PC = Cast<AAGPlayerController>(GetController());
