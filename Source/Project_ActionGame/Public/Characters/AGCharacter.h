@@ -72,6 +72,10 @@ protected:
 	void LerpActorRotation(const FRotator& Rotation, const float& Speed);
 	
 	virtual void AbilitySystemInit();
+
+	void EndAirAttacking();
+
+	void ResetAirAttackCombo();
 	
 private:
 	// Is called by LerpActorRotation as a timer to rotate the actor over time
@@ -120,13 +124,33 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations")
 	TArray<UAnimMontage*> BasicAttackAirAnims;
 
+	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations")
+	UAnimMontage* JumpStartAnim;
+
+	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations")
+	UAnimMontage* JumpStartCombatAnim;
+	
+	// Time before allowed to air combo if CanAirComboMulti is set
+	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Attacking")
+	float AirComboCooldownTime;
+
+	// Can doe more than one air combo
+	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Attacking")
+	bool bCanAirComboMulti;
+
 	int BasicAttackCombo;
+	
+	int AirAttackCombo;
 
 	bool bIsBasicAttacking;
+	
+	bool bIsAirAttacking;
 
 	FTimerHandle TH_BasicAttackTimer;
 
 	FTimerHandle TH_LerpActorRotation;
+
+	FTimerHandle TH_AirComboReset;
 
 	FRotator FinalActorLerpRotation;
 	

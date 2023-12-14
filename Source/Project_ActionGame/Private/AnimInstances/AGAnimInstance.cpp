@@ -6,6 +6,7 @@
 #include "KismetAnimationLibrary.h"
 #include "Characters/AGCharacter.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 
 UAGAnimInstance::UAGAnimInstance()
@@ -13,6 +14,8 @@ UAGAnimInstance::UAGAnimInstance()
 	Speed = SpeedXY = SpeedZ =  0.0f;
 	IsFalling = IsInAir = false;
 	bIsWeaponUnsheathed = false;
+	CharacterMovementMode = MOVE_Walking;
+	Direction = 0.0f;
 }
 
 void UAGAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
@@ -37,6 +40,8 @@ void UAGAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 		IsInAir = CharRef->GetMovementComponent()->IsFalling();
 
 		bIsWeaponUnsheathed = CharRef->IsWeaponUnsheathed();
+
+		CharacterMovementMode = CharRef->GetCharacterMovement()->MovementMode;
 	}
 	else
 	{

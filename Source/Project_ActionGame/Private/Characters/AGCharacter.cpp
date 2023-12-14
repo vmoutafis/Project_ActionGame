@@ -4,6 +4,7 @@
 #include "Characters/AGCharacter.h"
 
 #include "AGDataTypes.h"
+#include "AGHelperFunctions.h"
 #include "AbilitySystem/AGAbilitySystemComponent.h"
 #include "Loot/AGDLootGearWeapon.h"
 #include "Weapons/AGWeapon.h"
@@ -31,9 +32,17 @@ AAGCharacter::AAGCharacter()
 	bIsSheathingWeapon = false;
 
 	BasicAttackCombo = 0;
+	AirAttackCombo = 0;
 	bIsBasicAttacking = false;
+	bIsAirAttacking = false;
 
+	AirComboCooldownTime = 2.0f;
+	bCanAirComboMulti = false;
+	
 	ActorLerpRotationSpeed = 0.0f;
+	
+	JumpStartAnim = nullptr;
+	JumpStartCombatAnim = nullptr;
 }
 
 void AAGCharacter::AttachWeaponToHand()
@@ -145,11 +154,14 @@ void AAGCharacter::UnsheathWeapon(const bool& bInstant)
 
 bool AAGCharacter::TryBasicAttack()
 {
-	if (bIsBasicAttacking || !HasWeaponEquipped())
+	if (bIsBasicAttacking || !HasWeaponEquipped() || bIsAirAttacking)
 		return false;
 
 	if (!IsWeaponUnsheathed())
 		UnsheathWeapon(true);
+
+	if (GetWorldTimerManager().IsTimerActive(TH_SheathWeaponTimer))
+		GetWorldTimerManager().ClearTimer(TH_SheathWeaponTimer);
 
 	bIsBasicAttacking = true;
 
@@ -157,8 +169,14 @@ bool AAGCharacter::TryBasicAttack()
 
 	if (!GetCharacterMovement()->IsFalling() && BasicAttackAnims.IsValidIndex(BasicAttackCombo))
 		AnimLength = PlayAnimMontage(BasicAttackAnims[BasicAttackCombo]);
-	else if (GetCharacterMovement()->IsFalling() && BasicAttackAirAnims.IsValidIndex(BasicAttackCombo))
-		AnimLength = PlayAnimMontage(BasicAttackAirAnims[BasicAttackCombo]);
+	else if (GetCharacterMovement()->IsFalling() && BasicAttackAirAnims.IsValidIndex(AirAttackCombo))
+	{
+		if (GetCharacterMovement()->MovementMode != MOVE_Flying)
+			GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+		
+		AnimLength = PlayAnimMontage(BasicAttackAirAnims[AirAttackCombo]);
+		bIsAirAttacking = true;
+	}
 
 	if (AnimLength <= 0.0f) {
 		EndBasicAttackCombo();
@@ -181,7 +199,16 @@ void AAGCharacter::AttackComplete()
 
 	if (BasicAttackCombo >= BasicAttackAnims.Num())
 		BasicAttackCombo = 0;
-	
+
+	if (bIsAirAttacking)
+	{
+		AirAttackCombo++;
+		EndAirAttacking();
+	}
+
+	if (AirAttackCombo >= BasicAttackAirAnims.Num() && !GetWorldTimerManager().IsTimerActive(TH_AirComboReset) && bCanAirComboMulti)
+		GetWorldTimerManager().SetTimer(TH_AirComboReset, this, &AAGCharacter::ResetAirAttackCombo, AirComboCooldownTime);
+
 	bIsBasicAttacking = false;
 }
 
@@ -189,15 +216,29 @@ void AAGCharacter::EndBasicAttackCombo()
 {
 	BasicAttackCombo = 0;
 	bIsBasicAttacking = false;
+
+	if (bIsAirAttacking)
+		EndAirAttacking();
+	
 	GetWorldTimerManager().ClearTimer(TH_BasicAttackTimer);
 }
 
 void AAGCharacter::ForceCancelAttack()
 {
 	EndBasicAttackCombo();
+	ResetAirAttackCombo();
 	CancelActorRotationLerp();
 	
 	for (UAnimMontage* LAnim : BasicAttackAnims)
+	{
+		if (LAnim == GetCurrentMontage())
+		{
+			StopAnimMontage(LAnim);
+			break;
+		}
+	}
+
+	for (UAnimMontage* LAnim : BasicAttackAirAnims)
 	{
 		if (LAnim == GetCurrentMontage())
 		{
@@ -234,6 +275,15 @@ void AAGCharacter::TryJump(const bool& bPressed)
 	if (!GetCharacterMovement()->IsFalling())
 	{
 		ForceCancelAttack();
+
+		UAnimMontage* JumpAnimToPlay = JumpStartAnim;
+
+		if (IsWeaponUnsheathed() && IsValid(JumpStartCombatAnim))
+			JumpAnimToPlay = JumpStartCombatAnim;
+		
+		if (IsValid(JumpAnimToPlay))
+			PlayAnimMontage(JumpAnimToPlay);
+
 		Jump();
 	}
 	else
@@ -244,6 +294,7 @@ void AAGCharacter::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 
+	ResetAirAttackCombo();
 	EndBasicAttackCombo();
 }
 
@@ -271,6 +322,18 @@ void AAGCharacter::AbilitySystemInit()
 
 		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	}	
+}
+
+void AAGCharacter::EndAirAttacking()
+{
+	GetCharacterMovement()->SetMovementMode(MOVE_Falling);
+	bIsAirAttacking = false;
+}
+
+void AAGCharacter::ResetAirAttackCombo()
+{
+	AirAttackCombo = 0;
+	GetWorldTimerManager().ClearTimer(TH_AirComboReset);
 }
 
 void AAGCharacter::LerpActorRotationTick()

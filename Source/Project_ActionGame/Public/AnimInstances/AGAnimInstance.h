@@ -43,5 +43,8 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category=Pawn)
 	bool bIsWeaponUnsheathed;
+
+	UPROPERTY(BlueprintReadOnly, Category=Pawn)
+	TEnumAsByte<EMovementMode> CharacterMovementMode;
 	
 };
