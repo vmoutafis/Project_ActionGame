@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "AGWeapon.generated.h"
 
+class UAGGameplayEffect;
 class UBoxComponent;
 
 UCLASS()
@@ -27,10 +28,18 @@ public:
 	void DeactivateDamage();
 
 	float GetFullWeaponDamage() const;
+	
+	float GetFullWeaponDamageCustomRarity(const TEnumAsByte<EItemRarity>& CustomRarity) const;
+
+	float GetElementalDamage(const TEnumAsByte<ESpecialDamageTypes> Type) const;
+
+	float GetElementalDamageCustomRarity(const TEnumAsByte<ESpecialDamageTypes> Type, const TEnumAsByte<EItemRarity>& CustomRarity) const;
 
 	float GetBaseDamage() const { return BaseDamage; }
 
 	float GetRarityDamage(const TEnumAsByte<EItemRarity>& TestRarity) const;
+
+	TSubclassOf<UAGGameplayEffect> GetWeaponStatsEffect() const { return WeaponStatsEffect; }
 	
 protected:
 	// Called when the game starts or when spawned
@@ -39,6 +48,9 @@ protected:
 	UFUNCTION()
 	virtual void OnDamageColliderHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Weapon)
+	TSubclassOf<UAGGameplayEffect> WeaponStatsEffect;
 	
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Weapon)
@@ -50,6 +62,12 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="Weapon|Damage")
 	float BaseDamage;
+
+	UPROPERTY(EditDefaultsOnly, Category="Weapon|Damage")
+	float FireDamage;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Weapon|Damage")
+	float FrostDamage;
 
 	float SpecialDamage;
 

@@ -122,6 +122,8 @@ FReply UAGInventorySlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& I
 
 	UAGGameInstance* GI = Cast<UAGGameInstance>(GetGameInstance());
 	GI->ActivateInventoryItem(InventoryIndex);
+
+	EnableItemInfoWidget(false);
 	
 	return Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
 }

@@ -3,8 +3,10 @@
 
 #include "Weapons/AGWeapon.h"
 
+#include "AbilitySystemComponent.h"
 #include "AGCustomObjectTraceChannels.h"
 #include "AGHelperFunctions.h"
+#include "GameplayEffectTypes.h"
 #include "Characters/AGPlayerCharacter.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -32,7 +34,10 @@ AAGWeapon::AAGWeapon()
 
 	BaseDamage = 1.0f;
 	SpecialDamage = 0.0f;
+	FireDamage = 0.0f;
+	FrostDamage = 0.0f;
 	Rarity = EItemRarity::IR_Common;
+	WeaponStatsEffect = nullptr;
 }
 
 void AAGWeapon::InitialiseWeapon(TEnumAsByte<EItemRarity> NewRarity, const float& AdditionalDamage)
@@ -53,7 +58,36 @@ void AAGWeapon::DeactivateDamage()
 
 float AAGWeapon::GetFullWeaponDamage() const
 {
-	return GetRarityDamage(Rarity) + SpecialDamage;
+	return GetFullWeaponDamageCustomRarity(Rarity);
+}
+
+float AAGWeapon::GetFullWeaponDamageCustomRarity(const TEnumAsByte<EItemRarity>& CustomRarity) const
+{
+	return GetRarityDamage(CustomRarity) + SpecialDamage;
+}
+
+float AAGWeapon::GetElementalDamage(const TEnumAsByte<ESpecialDamageTypes> Type) const
+{
+	return GetElementalDamageCustomRarity(Type, Rarity);
+}
+
+float AAGWeapon::GetElementalDamageCustomRarity(const TEnumAsByte<ESpecialDamageTypes> Type, const TEnumAsByte<EItemRarity>& CustomRarity) const
+{
+	float ElementalDamage = 0.0f;
+
+	switch (Type)
+	{
+	case SDT_Fire:
+		ElementalDamage = FireDamage;
+		break;
+	case SDT_Frost:
+		ElementalDamage = FrostDamage;
+		break;
+	default:
+		break;
+	}
+	
+	return ElementalDamage * UAGHelperFunctions::GetRarityMultiplier(CustomRarity);
 }
 
 float AAGWeapon::GetRarityDamage(const TEnumAsByte<EItemRarity>& TestRarity) const

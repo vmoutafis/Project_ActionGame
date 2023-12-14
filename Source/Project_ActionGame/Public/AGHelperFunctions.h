@@ -16,6 +16,9 @@ class PROJECT_ACTIONGAME_API UAGHelperFunctions : public UBlueprintFunctionLibra
 	GENERATED_BODY()
 
 public:
+	// This returns the special damage types out as an array (ignores None)
+	static TArray<TEnumAsByte<ESpecialDamageTypes>> GetSpecialDamageTypesAsArray();
+	
 	static TEnumAsByte<EItemRarity> GetRandomRarity();
 
 	static FLinearColor GetRarityColour(const TEnumAsByte<EItemRarity>& Rarity);

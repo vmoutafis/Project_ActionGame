@@ -76,6 +76,8 @@ protected:
 	void EndAirAttacking();
 
 	void ResetAirAttackCombo();
+
+	void ClearWeaponDamage();
 	
 private:
 	// Is called by LerpActorRotation as a timer to rotate the actor over time
@@ -94,7 +96,10 @@ protected:
 	UAGAbilitySystemComponent* AbilitySystemComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category="Custom Character|AbilitySystem")
-	TArray<TSubclassOf<UAGGameplayEffect>> StarterEffects; 
+	TArray<TSubclassOf<UAGGameplayEffect>> StarterEffects;
+
+	UPROPERTY(EditDefaultsOnly, Category="Custom Character|AbilitySystem")
+	TSubclassOf<UAGGameplayEffect> ClearWeaponDamageEffect;
 	
 	UPROPERTY()
 	const UAGAttributeSet* Attributes;

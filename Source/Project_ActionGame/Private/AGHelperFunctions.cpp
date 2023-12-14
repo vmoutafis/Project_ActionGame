@@ -5,6 +5,11 @@
 
 #include "Kismet/KismetMathLibrary.h"
 
+TArray<TEnumAsByte<ESpecialDamageTypes>> UAGHelperFunctions::GetSpecialDamageTypesAsArray()
+{
+	return TArray<TEnumAsByte<ESpecialDamageTypes>>({ SDT_Fire, SDT_Frost });
+}
+
 TEnumAsByte<EItemRarity> UAGHelperFunctions::GetRandomRarity()
 {
 	if (UKismetMathLibrary::RandomBoolWithWeight(0.1f))
@@ -67,13 +72,13 @@ float UAGHelperFunctions::GetRarityMultiplier(const TEnumAsByte<EItemRarity>& Ra
 	case EItemRarity::IR_Common :
 		return 1.0f;
 	case EItemRarity::IR_UnCommon :
-		return 1.5f;
-	case EItemRarity::IR_Rare :
 		return 2.0f;
+	case EItemRarity::IR_Rare :
+		return 3.0f;
 	case EItemRarity::IR_Epic :
-		return 2.5f;
-	case EItemRarity::IR_Legendary :
 		return 4.0f;
+	case EItemRarity::IR_Legendary :
+		return 6.0f;
 	default:
 		return 1.0f;
 	}

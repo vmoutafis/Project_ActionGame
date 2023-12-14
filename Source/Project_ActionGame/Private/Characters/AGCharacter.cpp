@@ -43,6 +43,10 @@ AAGCharacter::AAGCharacter()
 	
 	JumpStartAnim = nullptr;
 	JumpStartCombatAnim = nullptr;
+
+	ClearWeaponDamageEffect = nullptr;
+
+	GetCharacterMovement()->AirControl = 1.0f;
 }
 
 void AAGCharacter::AttachWeaponToHand()
@@ -115,6 +119,8 @@ void AAGCharacter::EquipWeapon(const FInventoryItem* Item)
 	ForceCancelAttack();
 	SheathWeapon(true);
 
+	ClearWeaponDamage();
+	
 	if (Item == nullptr)
 	{
 		Weapon->SetChildActorClass(nullptr);
@@ -127,6 +133,38 @@ void AAGCharacter::EquipWeapon(const FInventoryItem* Item)
 		return;
 
 	Weapon->SetChildActorClass(WeaponLoot->WeaponClass);
+
+	AAGWeapon* WeaponRef = Cast<AAGWeapon>(Weapon->GetChildActor());
+	
+	if (!IsValid(WeaponRef))
+		return;
+
+	WeaponRef->InitialiseWeapon(Item->Rarity);
+	const TSubclassOf<UAGGameplayEffect> EffectClass = WeaponRef->GetWeaponStatsEffect();
+
+	if (!IsValid(EffectClass))
+		return;
+	
+	const FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
+	const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(EffectClass, 0.0f, ContextHandle);
+
+	const FGameplayTag WeaponDamageTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Damage.Base"));
+	
+	if (WeaponDamageTag.IsValid())
+		SpecHandle.Data->SetSetByCallerMagnitude(WeaponDamageTag, WeaponRef->GetFullWeaponDamage());
+
+	TArray<FName> ElementNames = { FName("Weapon.Damage.Fire"), FName("Weapon.Damage.Frost") };
+	TArray<TEnumAsByte<ESpecialDamageTypes>> ElementTypes = UAGHelperFunctions::GetSpecialDamageTypesAsArray();
+
+	for (uint8 i = 0; i < ElementNames.Num(); ++i)
+	{
+		FGameplayTag ElementalDamageTag = FGameplayTag::RequestGameplayTag(ElementNames[i]);
+
+		if (ElementalDamageTag.IsValid())
+			SpecHandle.Data->SetSetByCallerMagnitude(ElementalDamageTag, WeaponRef->GetElementalDamage(ElementTypes[i]));	
+	}
+
+	AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 }
 
 void AAGCharacter::UnsheathWeapon(const bool& bInstant)
@@ -334,6 +372,16 @@ void AAGCharacter::ResetAirAttackCombo()
 {
 	AirAttackCombo = 0;
 	GetWorldTimerManager().ClearTimer(TH_AirComboReset);
+}
+
+void AAGCharacter::ClearWeaponDamage()
+{
+	if (IsValid(ClearWeaponDamageEffect))
+	{
+		const FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
+		const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(ClearWeaponDamageEffect, 0.0f, ContextHandle);
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	}
 }
 
 void AAGCharacter::LerpActorRotationTick()
