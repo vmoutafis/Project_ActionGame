@@ -93,3 +93,13 @@ void UAGHelperFunctions::AGSimpleError(const FString& Message)
 {
 	UE_LOG(LogTemp, Error, TEXT("%s"), *Message)
 }
+
+void UAGHelperFunctions::AGObjectWarning(const UObject* Object, const FString& Message)
+{
+	AGSimpleWarning(FString(Object->GetName()) + ": " + Message);
+}
+
+void UAGHelperFunctions::AGObjectError(const UObject* Object, const FString& Message)
+{
+	AGSimpleError(FString(Object->GetName()) + ": " + Message);
+}

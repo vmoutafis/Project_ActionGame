@@ -30,4 +30,8 @@ public:
 	static void AGSimpleWarning(const FString& Message);
 
 	static void AGSimpleError(const FString& Message);
+
+	static void AGObjectWarning(const UObject* Object, const FString& Message);
+
+	static void AGObjectError(const UObject* Object,const FString& Message);
 };

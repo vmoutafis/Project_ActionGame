@@ -20,6 +20,8 @@ void UAGItemInfoTextWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 
+	SetArrow(GSA_Up);
+
 	if (!IsDesignTime())
 		return;
 	
@@ -32,5 +34,29 @@ void UAGItemInfoTextWidget::NativePreConstruct()
 
 void UAGItemInfoTextWidget::SetArrow(TEnumAsByte<EGearStatArrows> Direction)
 {
-	IMG_Arrow->SetBrush()
+	IMG_Arrow->SetVisibility(ESlateVisibility::HitTestInvisible);
+	
+	switch (Direction)
+	{
+	case GSA_Up:
+		if (IsValid(UpArrow))
+			IMG_Arrow->SetBrushFromMaterial(UpArrow);
+		else
+			IMG_Arrow->SetVisibility(ESlateVisibility::Hidden);
+		break;
+	case GSA_Down:
+		if (IsValid(DownArrow))
+			IMG_Arrow->SetBrushFromMaterial(DownArrow);
+		else
+			IMG_Arrow->SetVisibility(ESlateVisibility::Hidden);
+		break;
+	case GSA_Middle:
+		if (IsValid(MidArrow))
+			IMG_Arrow->SetBrushFromMaterial(MidArrow);
+		else
+			IMG_Arrow->SetVisibility(ESlateVisibility::Hidden);
+		break;
+	default:
+		break;
+	}
 }
