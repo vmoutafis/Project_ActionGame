@@ -160,4 +160,11 @@ protected:
 	FRotator FinalActorLerpRotation;
 	
 	float ActorLerpRotationSpeed;
+
+	float MeleeAttackRange;
+
+	float RangedAttackRange;
+
+	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Weapon")
+	bool bDoesntRequireWeapon;
 };

@@ -9,4 +9,5 @@ AAGEnemyCharacter::AAGEnemyCharacter()
 {
 	AIControllerClass = AAGEnemyController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	bDoesntRequireWeapon = true;
 }

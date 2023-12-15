@@ -47,6 +47,11 @@ AAGCharacter::AAGCharacter()
 	ClearWeaponDamageEffect = nullptr;
 
 	GetCharacterMovement()->AirControl = 1.0f;
+
+	MeleeAttackRange = 150.0f;
+	RangedAttackRange = 1000.0f;
+	
+	bDoesntRequireWeapon = false;
 }
 
 void AAGCharacter::AttachWeaponToHand()
@@ -195,7 +200,7 @@ bool AAGCharacter::TryBasicAttack()
 	if (bIsBasicAttacking || !HasWeaponEquipped() || bIsAirAttacking)
 		return false;
 
-	if (!IsWeaponUnsheathed())
+	if (!IsWeaponUnsheathed() && !bDoesntRequireWeapon)
 		UnsheathWeapon(true);
 
 	if (GetWorldTimerManager().IsTimerActive(TH_SheathWeaponTimer))
@@ -297,7 +302,7 @@ void AAGCharacter::BeginPlay()
 
 bool AAGCharacter::HasWeaponEquipped() const
 {
-	return IsValid(Weapon->GetChildActorClass());
+	return IsValid(Weapon->GetChildActorClass()) || bDoesntRequireWeapon;
 }
 
 UAbilitySystemComponent* AAGCharacter::GetAbilitySystemComponent() const
