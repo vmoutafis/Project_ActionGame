@@ -3,6 +3,7 @@
 
 #include "UserWidgets/AGItemInfoWidget.h"
 
+#include "AGGameInstance.h"
 #include "AGHelperFunctions.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -62,6 +63,9 @@ void UAGItemInfoWidget::SetItem(const FInventoryItem& NewItem)
 	{
 		UAGItemInfoIconTextWidget* DamageText = CreateWidget<UAGItemInfoIconTextWidget>(GetOwningPlayer(), ItemInfoIconClass);
 		const float DamageValue = WeaponLoot->WeaponClass.GetDefaultObject()->GetFullWeaponDamageCustomRarity(Item.Rarity);
+
+		UAGGameInstance* GI = Cast<UAGGameInstance>(GetGameInstance());
+		const FInventoryItem WeaponRef = GI->GetEquipmentByType(GT_Weapon);
 		
 		if (IsValid(DamageText))
 		{
@@ -69,6 +73,19 @@ void UAGItemInfoWidget::SetItem(const FInventoryItem& NewItem)
 			DamageText->TXT_Text->SetText(FText::FromString(FString::FromInt(FMath::TruncToInt(DamageValue))));
 			VB_ItemInfo->AddChild(DamageText);
 			DamageText->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 5.0f));
+
+			DamageText->SetArrow(GSA_Middle);
+			
+			if (!WeaponRef.bIsEmpty)
+			{
+				const AAGDLootGearWeapon* LootWeaponRef = Cast<AAGDLootGearWeapon>(WeaponRef.LootClass.GetDefaultObject());
+				const float EquipWeaponDamage = LootWeaponRef->WeaponClass.GetDefaultObject()->GetFullWeaponDamageCustomRarity(WeaponRef.Rarity);
+
+				if (EquipWeaponDamage > DamageValue)
+					DamageText->SetArrow(GSA_Down);
+				else if (EquipWeaponDamage < DamageValue)
+					DamageText->SetArrow(GSA_Up);
+			}
 		}
 
 		TArray<TEnumAsByte<ESpecialDamageTypes>> ElementTypes = UAGHelperFunctions::GetSpecialDamageTypesAsArray();
@@ -88,6 +105,19 @@ void UAGItemInfoWidget::SetItem(const FInventoryItem& NewItem)
 				EleDamageText->TXT_Text->SetText(FText::FromString(FString::FromInt(FMath::TruncToInt(EleDamageValue))));
 				VB_ItemInfo->AddChild(EleDamageText);
 				EleDamageText->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 5.0f));
+
+				EleDamageText->SetArrow(GSA_Middle);
+			
+				if (!WeaponRef.bIsEmpty)
+				{
+					const AAGDLootGearWeapon* LootWeaponRef = Cast<AAGDLootGearWeapon>(WeaponRef.LootClass.GetDefaultObject());
+					const float EquipWeaponDamage = LootWeaponRef->WeaponClass.GetDefaultObject()->GetElementalDamageCustomRarity(Type, WeaponRef.Rarity);
+
+					if (EquipWeaponDamage > EleDamageValue)
+						EleDamageText->SetArrow(GSA_Down);
+					else if (EquipWeaponDamage < EleDamageValue)
+						EleDamageText->SetArrow(GSA_Up);
+				}
 			}
 		}
 	}

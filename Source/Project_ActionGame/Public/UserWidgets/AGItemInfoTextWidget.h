@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "AGItemInfoTextWidget.generated.h"
 
+class UImage;
+
 UENUM(BlueprintType)
 enum EGearStatArrows
 {
@@ -38,11 +40,11 @@ public:
 	UImage* IMG_Arrow;
 
 	UPROPERTY(EditDefaultsOnly, Category=Arrow)
-	UTexture2D* UpArrow;
+	UMaterialInterface* UpArrow;
 
 	UPROPERTY(EditDefaultsOnly, Category=Arrow)
-    UTexture2D* DownArrow;
+    UMaterialInterface* DownArrow;
 
 	UPROPERTY(EditDefaultsOnly, Category=Arrow)
-	UTexture2D* MidArrow;
+	UMaterialInterface* MidArrow;
 };

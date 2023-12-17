@@ -9,6 +9,6 @@ public class Project_ActionGame : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[] { "DerivedDataCache", "AnimGraphRuntime", "GameplayAbilities", "GameplayTags", "GameplayTasks" });
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "Slate", "SlateCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "Slate", "SlateCore", "AIModule" });
 	}
 }
