@@ -92,6 +92,9 @@ public:
 	UChildActorComponent* Weapon;
 	
 protected:
+	UPROPERTY()
+	AActor* Target;
+	
 	UPROPERTY(EditDefaultsOnly, Category="Components")
 	UAGAbilitySystemComponent* AbilitySystemComponent;
 
