@@ -206,7 +206,7 @@ bool AAGCharacter::TryBasicAttack()
 	if (GetWorldTimerManager().IsTimerActive(TH_SheathWeaponTimer))
 		GetWorldTimerManager().ClearTimer(TH_SheathWeaponTimer);
 
-	bIsBasicAttacking = true;
+	bIsBasicAttacking = true;	
 
 	float AnimLength = 0.0f;
 
