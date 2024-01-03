@@ -40,7 +40,9 @@ public:
 	float GetRarityDamage(const TEnumAsByte<EItemRarity>& TestRarity) const;
 
 	TSubclassOf<UAGGameplayEffect> GetWeaponStatsEffect() const { return WeaponStatsEffect; }
-	
+
+	TArray<UAnimMontage*> GetAttackAnims() const { return AttackAnims; }
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -75,4 +77,7 @@ protected:
 	TSubclassOf<UDamageType> DamageType;
 
 	TEnumAsByte<EItemRarity> Rarity;
+
+	UPROPERTY(EditDefaultsOnly, Category="Weapon|Animations")
+	TArray<UAnimMontage*> AttackAnims;
 };

@@ -11,6 +11,8 @@
 #include "AbilitySystem/AGAttributeSet.h"
 #include "AbilitySystem/AGGameplayEffect.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Weapons/AGWeaponMelee.h"
+#include "Weapons/AGWeaponRanged.h"
 
 // Sets default values
 AAGCharacter::AAGCharacter()
@@ -210,15 +212,18 @@ bool AAGCharacter::TryBasicAttack()
 
 	float AnimLength = 0.0f;
 
-	if (!GetCharacterMovement()->IsFalling() && BasicAttackAnims.IsValidIndex(BasicAttackCombo))
-		AnimLength = PlayAnimMontage(BasicAttackAnims[BasicAttackCombo]);
-	else if (GetCharacterMovement()->IsFalling() && BasicAttackAirAnims.IsValidIndex(AirAttackCombo))
+	if (MeleeWeaponEquipped())
 	{
-		if (GetCharacterMovement()->MovementMode != MOVE_Flying)
-			GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+		if (!GetCharacterMovement()->IsFalling() && GetEquippedWeapon()->GetAttackAnims().IsValidIndex(BasicAttackCombo))
+			AnimLength = PlayAnimMontage(GetEquippedWeapon()->GetAttackAnims()[BasicAttackCombo]);
+		else if (GetCharacterMovement()->IsFalling() && GetMeleeWeapon()->GetAirAttackAnims().IsValidIndex(AirAttackCombo))
+		{
+			if (GetCharacterMovement()->MovementMode != MOVE_Flying)
+				GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 		
-		AnimLength = PlayAnimMontage(BasicAttackAirAnims[AirAttackCombo]);
-		bIsAirAttacking = true;
+			AnimLength = PlayAnimMontage(GetMeleeWeapon()->GetAirAttackAnims()[AirAttackCombo]);
+			bIsAirAttacking = true;
+		}	
 	}
 
 	if (AnimLength <= 0.0f) {
@@ -228,6 +233,9 @@ bool AAGCharacter::TryBasicAttack()
 	
 	GetWorldTimerManager().SetTimer(TH_BasicAttackTimer, this, &AAGCharacter::EndBasicAttackCombo, AnimLength);
 
+	if (RangedWeaponEquipped())
+		return true;
+	
 	FRotator RotateTo;
 	RotateTo.Yaw = GetControlRotation().Yaw;
 	
@@ -240,7 +248,7 @@ void AAGCharacter::AttackComplete()
 {
 	BasicAttackCombo++;
 
-	if (BasicAttackCombo >= BasicAttackAnims.Num())
+	if (BasicAttackCombo >= GetEquippedWeapon()->GetAttackAnims().Num())
 		BasicAttackCombo = 0;
 
 	if (bIsAirAttacking)
@@ -249,10 +257,14 @@ void AAGCharacter::AttackComplete()
 		EndAirAttacking();
 	}
 
-	if (AirAttackCombo >= BasicAttackAirAnims.Num() && !GetWorldTimerManager().IsTimerActive(TH_AirComboReset) && bCanAirComboMulti)
+	bIsBasicAttacking = false;
+
+	if (!MeleeWeaponEquipped())
+		return;
+	
+	if (AirAttackCombo >= GetMeleeWeapon()->GetAirAttackAnims().Num() && !GetWorldTimerManager().IsTimerActive(TH_AirComboReset) && bCanAirComboMulti)
 		GetWorldTimerManager().SetTimer(TH_AirComboReset, this, &AAGCharacter::ResetAirAttackCombo, AirComboCooldownTime);
 
-	bIsBasicAttacking = false;
 }
 
 void AAGCharacter::EndBasicAttackCombo()
@@ -271,8 +283,11 @@ void AAGCharacter::ForceCancelAttack()
 	EndBasicAttackCombo();
 	ResetAirAttackCombo();
 	CancelActorRotationLerp();
+
+	if (!IsValid(GetEquippedWeapon()))
+		return;
 	
-	for (UAnimMontage* LAnim : BasicAttackAnims)
+	for (UAnimMontage* LAnim : GetEquippedWeapon()->GetAttackAnims())
 	{
 		if (LAnim == GetCurrentMontage())
 		{
@@ -281,7 +296,10 @@ void AAGCharacter::ForceCancelAttack()
 		}
 	}
 
-	for (UAnimMontage* LAnim : BasicAttackAirAnims)
+	if (!MeleeWeaponEquipped())
+		return;
+	
+	for (UAnimMontage* LAnim : GetMeleeWeapon()->GetAirAttackAnims())
 	{
 		if (LAnim == GetCurrentMontage())
 		{
@@ -339,6 +357,46 @@ void AAGCharacter::Landed(const FHitResult& Hit)
 
 	ResetAirAttackCombo();
 	EndBasicAttackCombo();
+}
+
+AAGWeapon* AAGCharacter::GetEquippedWeapon() const
+{
+	if (!HasWeaponEquipped())
+		return nullptr;
+
+	return Cast<AAGWeapon>(Weapon->GetChildActor());
+}
+
+bool AAGCharacter::RangedWeaponEquipped() const
+{
+	return IsValid(Cast<AAGWeaponRanged>(GetEquippedWeapon()));
+}
+
+bool AAGCharacter::MeleeWeaponEquipped() const
+{
+	return IsValid(Cast<AAGWeaponMelee>(GetEquippedWeapon()));
+}
+
+AAGWeaponMelee* AAGCharacter::GetMeleeWeapon() const
+{
+	if (!HasWeaponEquipped())
+		return nullptr;
+
+	if (!MeleeWeaponEquipped())
+		return nullptr;
+
+	return Cast<AAGWeaponMelee>(GetEquippedWeapon());
+}
+
+AAGWeaponRanged* AAGCharacter::GetRangedWeapon() const
+{
+	if (!HasWeaponEquipped())
+		return nullptr;
+
+	if (!RangedWeaponEquipped())
+		return nullptr;
+
+	return Cast<AAGWeaponRanged>(GetEquippedWeapon());
 }
 
 void AAGCharacter::LerpActorRotation(const FRotator& Rotation, const float& Speed)

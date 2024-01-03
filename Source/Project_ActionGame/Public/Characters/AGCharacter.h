@@ -7,6 +7,9 @@
 #include "GameFramework/Character.h"
 #include "AGCharacter.generated.h"
 
+class AAGWeaponRanged;
+class AAGWeaponMelee;
+class AAGWeapon;
 class UAGGameplayEffect;
 struct FOnAttributeChangeData;
 class UAGAttributeSet;
@@ -66,6 +69,16 @@ public:
 
 	virtual void Landed(const FHitResult& Hit) override;
 
+	AAGWeapon* GetEquippedWeapon() const;
+
+	bool RangedWeaponEquipped() const;
+
+	bool MeleeWeaponEquipped() const;
+
+	AAGWeaponMelee* GetMeleeWeapon() const;
+
+	AAGWeaponRanged* GetRangedWeapon() const;
+	
 protected:
 	// Lerp the actor to a new rotation over time
 	// Run CancelActorRotationLerp() to stop
@@ -125,12 +138,6 @@ protected:
 	FTimerHandle TH_SheathWeaponTimer;
 
 	bool bIsSheathingWeapon;
-
-	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations")
-	TArray<UAnimMontage*> BasicAttackAnims;
-
-	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations")
-	TArray<UAnimMontage*> BasicAttackAirAnims;
 
 	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations")
 	UAnimMontage* JumpStartAnim;
