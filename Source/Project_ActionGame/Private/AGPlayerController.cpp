@@ -144,7 +144,7 @@ void AAGPlayerController::HandleBasicAttack(const FInputActionInstance& Action)
 	if (!bPressed || !IsValid(PlayerRef))
 		return;
 
-	PlayerRef->TryBasicAttack();
+	PlayerRef->TryWeaponAttack();
 }
 
 void AAGPlayerController::HandleWeaponSheath(const FInputActionInstance& Action)

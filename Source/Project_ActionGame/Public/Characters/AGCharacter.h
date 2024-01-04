@@ -46,7 +46,7 @@ public:
 	void SheathWeapon(const bool& bInstant = false);
 	
 	// Try to basic attack using the basic attack anims array
-	bool TryBasicAttack();
+	bool TryWeaponAttack();
 
 	// Should be run when next combo or anim cancel is allowed
 	void AttackComplete();

@@ -197,7 +197,7 @@ void AAGCharacter::UnsheathWeapon(const bool& bInstant)
 	GetWorldTimerManager().SetTimer(TH_UnsheathWeaponTimer, this, &AAGCharacter::AttachWeaponToHand, AnimTime);
 }
 
-bool AAGCharacter::TryBasicAttack()
+bool AAGCharacter::TryWeaponAttack()
 {
 	if (bIsBasicAttacking || !HasWeaponEquipped() || bIsAirAttacking)
 		return false;
