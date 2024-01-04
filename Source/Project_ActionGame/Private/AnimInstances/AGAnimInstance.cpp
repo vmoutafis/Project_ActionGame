@@ -3,6 +3,7 @@
 
 #include "AnimInstances/AGAnimInstance.h"
 
+#include "AGDataTypes.h"
 #include "KismetAnimationLibrary.h"
 #include "Characters/AGCharacter.h"
 #include "GameFramework/Character.h"
@@ -16,6 +17,7 @@ UAGAnimInstance::UAGAnimInstance()
 	bIsWeaponUnsheathed = false;
 	CharacterMovementMode = MOVE_Walking;
 	Direction = 0.0f;
+	EquippedWeaponType = EWeaponTypes::WT_None;
 }
 
 void UAGAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
@@ -34,12 +36,10 @@ void UAGAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 
 	Direction = UKismetAnimationLibrary::CalculateDirection(TryGetPawnOwner()->GetVelocity(), TryGetPawnOwner()->GetActorRotation());
 	
-	if (const AAGCharacter* CharRef = Cast<AAGCharacter>(TryGetPawnOwner()))
+	if (const ACharacter* CharRef = Cast<ACharacter>(TryGetPawnOwner()))
 	{
 		IsFalling = CharRef->GetMovementComponent()->IsFalling();
 		IsInAir = CharRef->GetMovementComponent()->IsFalling();
-
-		bIsWeaponUnsheathed = CharRef->IsWeaponUnsheathed();
 
 		CharacterMovementMode = CharRef->GetCharacterMovement()->MovementMode;
 	}
@@ -47,6 +47,12 @@ void UAGAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	{
 		IsFalling = SpeedZ < 0.0f;
 		IsInAir = SpeedZ != 0.0f;
+	}
+
+	if (const AAGCharacter* AGCharRef = Cast<AAGCharacter>(TryGetPawnOwner()))
+	{
+		bIsWeaponUnsheathed = AGCharRef->IsWeaponUnsheathed();
+		EquippedWeaponType = AGCharRef->GetEquippedWeaponType();
 	}
 }
 

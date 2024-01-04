@@ -43,6 +43,8 @@ public:
 
 	TArray<UAnimMontage*> GetAttackAnims() const { return AttackAnims; }
 
+	TEnumAsByte<EWeaponTypes> GetWeaponType() const { return WeaponType; }
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -80,4 +82,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Weapon|Animations")
 	TArray<UAnimMontage*> AttackAnims;
+
+	UPROPERTY(EditDefaultsOnly, Category="Weapon")
+	TEnumAsByte<EWeaponTypes> WeaponType;
 };

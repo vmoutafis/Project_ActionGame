@@ -52,8 +52,6 @@ AAGCharacter::AAGCharacter()
 
 	MeleeAttackRange = 150.0f;
 	RangedAttackRange = 1000.0f;
-	
-	bDoesntRequireWeapon = false;
 }
 
 void AAGCharacter::AttachWeaponToHand()
@@ -202,7 +200,7 @@ bool AAGCharacter::TryWeaponAttack()
 	if (bIsBasicAttacking || !HasWeaponEquipped() || bIsAirAttacking)
 		return false;
 
-	if (!IsWeaponUnsheathed() && !bDoesntRequireWeapon)
+	if (!IsWeaponUnsheathed())
 		UnsheathWeapon(true);
 
 	if (GetWorldTimerManager().IsTimerActive(TH_SheathWeaponTimer))
@@ -320,7 +318,7 @@ void AAGCharacter::BeginPlay()
 
 bool AAGCharacter::HasWeaponEquipped() const
 {
-	return IsValid(Weapon->GetChildActorClass()) || bDoesntRequireWeapon;
+	return IsValid(Weapon->GetChildActor());
 }
 
 UAbilitySystemComponent* AAGCharacter::GetAbilitySystemComponent() const
@@ -397,6 +395,14 @@ AAGWeaponRanged* AAGCharacter::GetRangedWeapon() const
 		return nullptr;
 
 	return Cast<AAGWeaponRanged>(GetEquippedWeapon());
+}
+
+TEnumAsByte<EWeaponTypes> AAGCharacter::GetEquippedWeaponType() const
+{
+	if (!HasWeaponEquipped())
+		return EWeaponTypes::WT_None;
+
+	return GetEquippedWeapon()->GetWeaponType();
 }
 
 void AAGCharacter::LerpActorRotation(const FRotator& Rotation, const float& Speed)

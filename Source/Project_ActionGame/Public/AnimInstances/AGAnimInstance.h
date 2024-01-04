@@ -6,6 +6,7 @@
 #include "Animation/AnimInstance.h"
 #include "AGAnimInstance.generated.h"
 
+enum EWeaponTypes : uint8;
 /**
  * 
  */
@@ -46,5 +47,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category=Pawn)
 	TEnumAsByte<EMovementMode> CharacterMovementMode;
-	
+
+	UPROPERTY(BlueprintReadOnly, Category=Character)
+	TEnumAsByte<EWeaponTypes> EquippedWeaponType;
 };

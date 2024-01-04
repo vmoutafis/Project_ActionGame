@@ -10,6 +10,5 @@
 AAGNPCharacter::AAGNPCharacter()
 {
 	AIControllerClass = AAGAIController::StaticClass();
-	bDoesntRequireWeapon = true;
 }
 

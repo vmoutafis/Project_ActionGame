@@ -38,6 +38,7 @@ AAGWeapon::AAGWeapon()
 	FrostDamage = 0.0f;
 	Rarity = EItemRarity::IR_Common;
 	WeaponStatsEffect = nullptr;
+	WeaponType = EWeaponTypes::WT_Melee;
 }
 
 void AAGWeapon::InitialiseWeapon(TEnumAsByte<EItemRarity> NewRarity, const float& AdditionalDamage)

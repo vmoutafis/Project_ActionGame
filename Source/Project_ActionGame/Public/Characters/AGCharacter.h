@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "AGCharacter.generated.h"
 
+enum EWeaponTypes : uint8;
 class AAGWeaponRanged;
 class AAGWeaponMelee;
 class AAGWeapon;
@@ -78,6 +79,8 @@ public:
 	AAGWeaponMelee* GetMeleeWeapon() const;
 
 	AAGWeaponRanged* GetRangedWeapon() const;
+
+	TEnumAsByte<EWeaponTypes> GetEquippedWeaponType() const;
 	
 protected:
 	// Lerp the actor to a new rotation over time
@@ -174,7 +177,4 @@ protected:
 	float MeleeAttackRange;
 
 	float RangedAttackRange;
-
-	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Weapon")
-	bool bDoesntRequireWeapon;
 };
