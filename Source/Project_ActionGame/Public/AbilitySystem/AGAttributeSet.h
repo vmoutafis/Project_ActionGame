@@ -7,11 +7,6 @@
 #include "AGDataTypes.h"
 #include "AGAttributeSet.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLevelUp, float, Level);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnDamageApplied, float, Damage, TEnumAsByte<ESpecialDamageTypes>, DamageType, float, ShieldDamage, float, HealthDamage);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealed, float, NewHealth, float, AmountHealed);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnExperienceGained, float, Amount);
-
 /**
  * 
  */
@@ -21,19 +16,6 @@ class PROJECT_ACTIONGAME_API UAGAttributeSet : public UAttributeSet
 {
 	GENERATED_BODY()
 
-public:
-	UPROPERTY(BlueprintAssignable)
-	FOnLevelUp Delegate_OnLevelUp;
-
-	UPROPERTY(BlueprintAssignable)
-	FOnDamageApplied Delegate_OnDamageApplied;
-
-	UPROPERTY(BlueprintAssignable)
-	FOnHealed Delegate_OnHealed;
-
-	UPROPERTY(BlueprintAssignable)
-	FOnExperienceGained Delegate_OnExperienceGained;
-	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayAttributeData Level;
@@ -78,7 +60,7 @@ protected:
 	FGameplayAttributeData MagicResist;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FGameplayAttributeData ApplyDamage;
+	FGameplayAttributeData ApplyPhysicalDamage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayAttributeData ApplyFireDamage;
@@ -159,10 +141,10 @@ public:
 	void SetMagicResist(float NewVal);
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(MagicResist);
 
-	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(UAGAttributeSet, ApplyDamage);
-    float GetApplyDamage() const;
-    void SetApplyDamage(float NewVal);
-    GAMEPLAYATTRIBUTE_VALUE_INITTER(ApplyDamage);
+	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(UAGAttributeSet, ApplyPhysicalDamage);
+    float GetApplyPhysicalDamage() const;
+    void SetApplyPhysicalDamage(float NewVal);
+    GAMEPLAYATTRIBUTE_VALUE_INITTER(ApplyPhysicalDamage);
 
 	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(UAGAttributeSet, ApplyFireDamage);
 	float GetApplyFireDamage() const;

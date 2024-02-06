@@ -223,19 +223,19 @@ void UAGAttributeSet::SetMagicResist(float NewVal)
 		ASC->SetNumericAttributeBase(GetMagicResistAttribute(), NewVal);
 }
 
-float UAGAttributeSet::GetApplyDamage() const
+float UAGAttributeSet::GetApplyPhysicalDamage() const
 {
-	return ApplyDamage.GetCurrentValue();
+	return ApplyPhysicalDamage.GetCurrentValue();
 }
 
-void UAGAttributeSet::SetApplyDamage(float NewVal)
+void UAGAttributeSet::SetApplyPhysicalDamage(float NewVal)
 {
 	NewVal = FMath::Max(NewVal, 0.0f);
 
 	UAGAbilitySystemComponent* ASC = Cast<UAGAbilitySystemComponent>(GetOwningAbilitySystemComponent());
 	
 	if (ensure(ASC))
-		ASC->SetNumericAttributeBase(GetApplyDamageAttribute(), NewVal);
+		ASC->SetNumericAttributeBase(GetApplyPhysicalDamageAttribute(), NewVal);
 }
 
 float UAGAttributeSet::GetApplyFireDamage() const
@@ -287,68 +287,32 @@ bool UAGAttributeSet::TryLevelUp()
 		return false;
 	
 	SetLevel(GetLevel() + 1);
-	Delegate_OnLevelUp.Broadcast(GetLevel());
 
 	return true;
 }
 
 void UAGAttributeSet::HandleDamage(const FGameplayEffectModCallbackData& Data)
 {
-	// if the data was an apply damage attribute
-	if (Data.EvaluatedData.Attribute != GetApplyDamageAttribute() &&
-		Data.EvaluatedData.Attribute != GetFireDamageAttribute() &&
-		Data.EvaluatedData.Attribute != GetFrostDamageAttribute())
-		return;
-	
-	float NewHealth = GetHealth();
-	float DamageTaken = Data.EvaluatedData.Magnitude;
-	TEnumAsByte<ESpecialDamageTypes> DamageType = SDT_None;
-	float ShieldDamage = 0.0f;
-	float HealthDamage = 0.0f;
+	UAGAbilitySystemComponent* ABS = Cast<UAGAbilitySystemComponent>(GetOwningAbilitySystemComponent());
+	check(ABS)
 
-	// if the damage was an elemental damage attribute
-	if (Data.EvaluatedData.Attribute == GetFireDamageAttribute() ||
-		Data.EvaluatedData.Attribute == GetFrostDamageAttribute())
+	float FinalDamage = Data.EvaluatedData.Magnitude;
+
+	if (GetShield() > 0.0f)
 	{
-		// store the old shield for carry over
 		const float OldShield = GetShield();
-		float NewShield = OldShield;
+		SetShield(GetShield() - FinalDamage);
 
-		// if there is a shield
-		if (NewShield > 0)
-		{
-			// set the shield to the reduced amount
-			NewShield = NewShield - DamageTaken;
-			SetShield(NewShield);
+		ABS->OnShieldDamageTaken(std::min(FinalDamage, OldShield));
 
-			ShieldDamage = OldShield - NewShield;
-				
-			// reduce damage by the amount the shield took
-			DamageTaken = FMath::Max(DamageTaken - OldShield, 0.0f);
-		}
-
-		// set the damage type
-		if (Data.EvaluatedData.Attribute == GetFireDamageAttribute())
-			DamageType = SDT_Fire;
-			
-		if (Data.EvaluatedData.Attribute == GetFrostDamageAttribute())
-			DamageType = SDT_Fire;
+		FinalDamage -= OldShield;
 	}
-	else // if the damage wasn't elemental
-		{
-		// reduce the damage based on armour
-		DamageTaken = FMath::Max(DamageTaken - GetArmour(), 0.0f);		
-		}
 
-	// update the health if damage remaining
-	if (DamageTaken > 0)
+	if (FinalDamage > 0.0f)
 	{
-		NewHealth -= DamageTaken;
-		HealthDamage = DamageTaken;
-		SetHealth(NewHealth);
+		SetHealth(GetHealth() - FinalDamage);
+		ABS->OnShieldDamageTaken(FinalDamage);
 	}
-		
-	Delegate_OnDamageApplied.Broadcast(Data.EvaluatedData.Magnitude, DamageType, ShieldDamage, HealthDamage);
 }
 
 void UAGAttributeSet::HandleHealing(const FGameplayEffectModCallbackData& Data)
@@ -358,8 +322,6 @@ void UAGAttributeSet::HandleHealing(const FGameplayEffectModCallbackData& Data)
 	
 	const float NewHealth = GetHealth() + Data.EvaluatedData.Magnitude;
 	SetHealth(NewHealth);
-
-	Delegate_OnHealed.Broadcast(GetHealth(), Data.EvaluatedData.Magnitude);
 }
 
 void UAGAttributeSet::HandleExperience(const FGameplayEffectModCallbackData& Data)
@@ -368,21 +330,14 @@ void UAGAttributeSet::HandleExperience(const FGameplayEffectModCallbackData& Dat
 		return;
 	
 	float NewValue = GetExperience() + Data.EvaluatedData.Magnitude;
-	bool bMaxLevel = false;
 	
 	if (NewValue >= GetMaxExperience())
 	{
 		if (TryLevelUp())
 			NewValue = NewValue - GetMaxExperience();
 		else
-		{
-			bMaxLevel = true;
 			NewValue = GetMaxExperience();
-		}
 	}
 
 	SetExperience(NewValue);
-
-	if (!bMaxLevel)
-		Delegate_OnExperienceGained.Broadcast(Data.EvaluatedData.Magnitude);
 }

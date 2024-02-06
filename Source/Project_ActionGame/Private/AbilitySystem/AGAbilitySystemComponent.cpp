@@ -76,3 +76,13 @@ void UAGAbilitySystemComponent::StatsChanged(const FOnAttributeChangeData& Data)
 {
 	Delegate_OnAnyStatChanged.Broadcast(Data.Attribute, Data.NewValue);
 }
+
+void UAGAbilitySystemComponent::OnHealthDamageTaken(float Damage)
+{
+	Delegate_OnHealthDamageTaken.Broadcast(Damage);
+}
+
+void UAGAbilitySystemComponent::OnShieldDamageTaken(float Damage)
+{
+	Delegate_OnShieldDamageTaken.Broadcast(Damage);
+}

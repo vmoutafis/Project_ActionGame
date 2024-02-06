@@ -98,6 +98,7 @@ protected:
 private:
 	// Is called by LerpActorRotation as a timer to rotate the actor over time
 	// Uses ActorLerpRotation and ActorLerpRotationSpeed to determine
+	UFUNCTION()
 	void LerpActorRotationTick();
 
 	// Cancels the LerpActorRotation timer

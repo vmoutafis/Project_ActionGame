@@ -13,6 +13,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnShieldChanged, float, Current, f
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnExperienceChanged, float, Current, float, Max);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLevelChanged, float, Current, float, Max);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAnyStatChanged, const FGameplayAttribute&, Attribute, float, Value);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthDamageTaken, float, Damage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShieldDamageTaken, float, Damage);
 
 /**
  * 
@@ -40,11 +42,23 @@ public:
 	// Stats are the any number that can change (e.g. max health, magic resist, armour, etc...)
 	FOnAnyStatChanged Delegate_OnAnyStatChanged;
 
+	// When health takes damage from an overridden apply damage attribute
+	FOnHealthDamageTaken Delegate_OnHealthDamageTaken;
+
+	// When shield takes damage from an overridden apply damage attribute
+	FOnHealthDamageTaken Delegate_OnShieldDamageTaken;
+
 	const UAGAttributeSet* GetOwnerAttributes() const;
+
+	UFUNCTION()
+	void OnHealthDamageTaken(float Damage);
+
+	UFUNCTION()
+	void OnShieldDamageTaken(float Damage);
 	
 protected:
 	void HealthChanged(const FOnAttributeChangeData& Data);
-	
+
 	void ShieldChanged(const FOnAttributeChangeData& Data);
 
 	void ExperienceChanged(const FOnAttributeChangeData& Data);
