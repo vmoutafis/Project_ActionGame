@@ -94,6 +94,8 @@ protected:
 	void ResetAirAttackCombo();
 
 	void ClearWeaponDamage();
+
+	UAnimMontage* GetJumpStartAnim() const;
 	
 private:
 	// Is called by LerpActorRotation as a timer to rotate the actor over time
@@ -132,22 +134,28 @@ protected:
 
 	bool bIsWeaponUnsheathed;
 
-	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations")
+	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations|Weapon")
 	UAnimMontage* UnsheathWeaponAnim;
 
-	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations")
+	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations|Weapon")
 	UAnimMontage* SheathWeaponAnim;
 
+	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations|Jump")
+	TArray<UAnimMontage*> JumpStartAnims;
+
+	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations|Jump")
+	TArray<UAnimMontage*> JumpStartCombatAnims;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations|Jump")
+	UAnimMontage* LandAnim;
+
+	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations|Jump")
+	UAnimMontage* LandCombatAnim;
+	
 	FTimerHandle TH_UnsheathWeaponTimer;
 	FTimerHandle TH_SheathWeaponTimer;
 
 	bool bIsSheathingWeapon;
-
-	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations")
-	UAnimMontage* JumpStartAnim;
-
-	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations")
-	UAnimMontage* JumpStartCombatAnim;
 	
 	// Time before allowed to air combo if CanAirComboMulti is set
 	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Attacking")

@@ -43,7 +43,7 @@ UENUM(BlueprintType)
 enum EWeaponTypes: uint8
 {
 	WT_None = 0 UMETA(DisplayName = "None"),
-	WT_Melee UMETA(DisplayName = "Melee"),
+	WT_Sword UMETA(DisplayName = "Sword"),
 	WT_Rifle UMETA(DisplayName = "Rifle"),
 	WT_Pistol UMETA(DisplayName = "Pistol")
 };

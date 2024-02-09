@@ -5,6 +5,7 @@
 
 #include "AGDataTypes.h"
 #include "AGHelperFunctions.h"
+#include "KismetAnimationLibrary.h"
 #include "AbilitySystem/AGAbilitySystemComponent.h"
 #include "Loot/AGDLootGearWeapon.h"
 #include "Weapons/AGWeapon.h"
@@ -42,9 +43,6 @@ AAGCharacter::AAGCharacter()
 	bCanAirComboMulti = false;
 	
 	ActorLerpRotationSpeed = 0.0f;
-	
-	JumpStartAnim = nullptr;
-	JumpStartCombatAnim = nullptr;
 
 	ClearWeaponDamageEffect = nullptr;
 
@@ -335,10 +333,7 @@ void AAGCharacter::TryJump(const bool& bPressed)
 	{
 		ForceCancelAttack();
 
-		UAnimMontage* JumpAnimToPlay = JumpStartAnim;
-
-		if (IsWeaponUnsheathed() && IsValid(JumpStartCombatAnim))
-			JumpAnimToPlay = JumpStartCombatAnim;
+		UAnimMontage* JumpAnimToPlay = GetJumpStartAnim();
 		
 		if (IsValid(JumpAnimToPlay))
 			PlayAnimMontage(JumpAnimToPlay);
@@ -451,6 +446,21 @@ void AAGCharacter::ClearWeaponDamage()
 		const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(ClearWeaponDamageEffect, 0.0f, ContextHandle);
 		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	}
+}
+
+UAnimMontage* AAGCharacter::GetJumpStartAnim() const
+{
+	TArray<UAnimMontage*> JumpAnims = JumpStartAnims;
+	
+	if (IsWeaponUnsheathed())
+		JumpAnims = JumpStartCombatAnims;
+
+	if (JumpAnims.IsEmpty())
+		return nullptr;
+
+	float Direction = UKismetAnimationLibrary::CalculateDirection(GetVelocity(), GetActorRotation());
+	
+	return JumpAnims[0];
 }
 
 void AAGCharacter::LerpActorRotationTick()
