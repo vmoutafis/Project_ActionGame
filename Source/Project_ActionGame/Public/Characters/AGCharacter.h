@@ -26,6 +26,8 @@ public:
 	// Sets default values for this character's properties
 	AAGCharacter();
 
+	virtual void Tick(float DeltaSeconds) override;
+
 	virtual void AttachWeaponToHand();
 
 	virtual void AttachWeaponToSheath();
@@ -86,8 +88,8 @@ public:
 
 protected:
 	// Lerp the actor to a new rotation over time
-	// Run CancelActorRotationLerp() to stop
-	void LerpActorRotation(const FRotator& Rotation, const float& Speed);
+	// Run CancelActorRotationLerp() to stop - if duration is 0 then this must be called to stop
+	void LerpActorRotation(const FRotator& Rotation, const float& Duration = 1.0f);
 	
 	virtual void AbilitySystemInit();
 
@@ -97,15 +99,18 @@ protected:
 
 	void ClearWeaponDamage();
 
+	// gets the relevant jump start animation for directional based jumps
 	UAnimMontage* GetJumpStartAnim() const;
+
+	// if no duration is set run EnableBasicAttack() to re-enable
+	void CooldownBasicAttack(float Duration);
+
+	UFUNCTION()
+	void EnableBasicAttack();
 	
 private:
-	// Is called by LerpActorRotation as a timer to rotate the actor over time
-	// Uses ActorLerpRotation and ActorLerpRotationSpeed to determine
-	UFUNCTION()
-	void LerpActorRotationTick();
 
-	// Cancels the LerpActorRotation timer
+	// Cancels the LerpActorRotation
 	void CancelActorRotationLerp();
 	
 public:
@@ -183,11 +188,20 @@ protected:
 
 	FTimerHandle TH_AirComboReset;
 
-	FRotator FinalActorLerpRotation;
+	FTimerHandle TH_BasicAttackCooldown;
+
+	FTimerHandle TH_AllowCancelAttack;
 	
-	float ActorLerpRotationSpeed;
+	// all contribute to the Actor Lerp Rotation
+	FRotator FinalActorLerpRotation;
+	FRotator StartActorLerpRotation;
+	float ActorLerpRotationDuration;
+	bool bLerpActorRotation;
+	float ActorLerpRotationAlpha;
 
 	float MeleeAttackRange;
 
 	float RangedAttackRange;
+
+	bool bBasicAttackCooldown;
 };

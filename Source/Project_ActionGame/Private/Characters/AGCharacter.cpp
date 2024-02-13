@@ -42,7 +42,8 @@ AAGCharacter::AAGCharacter()
 	AirComboCooldownTime = 2.0f;
 	bCanAirComboMulti = false;
 	
-	ActorLerpRotationSpeed = 0.0f;
+	ActorLerpRotationDuration = 0.0f;
+	ActorLerpRotationAlpha = 0.0f;
 
 	ClearWeaponDamageEffect = nullptr;
 
@@ -50,6 +51,25 @@ AAGCharacter::AAGCharacter()
 
 	MeleeAttackRange = 150.0f;
 	RangedAttackRange = 1000.0f;
+
+	bBasicAttackCooldown = false;
+}
+
+void AAGCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (bLerpActorRotation)
+	{
+		ActorLerpRotationAlpha += DeltaSeconds / std::max(ActorLerpRotationDuration, 0.001f);
+		
+		FRotator LerpRotation = FMath::Lerp(StartActorLerpRotation, FinalActorLerpRotation, ActorLerpRotationAlpha);
+
+		SetActorRotation(LerpRotation);
+
+		if (ActorLerpRotationAlpha >= 1.0f)
+			CancelActorRotationLerp();
+	}
 }
 
 void AAGCharacter::AttachWeaponToHand()
@@ -195,7 +215,7 @@ void AAGCharacter::UnsheathWeapon(const bool& bInstant)
 
 bool AAGCharacter::TryWeaponAttack()
 {
-	if (bIsBasicAttacking || !HasWeaponEquipped() || bIsAirAttacking)
+	if (bIsBasicAttacking || !HasWeaponEquipped() || bIsAirAttacking || bBasicAttackCooldown)
 		return false;
 
 	if (!IsWeaponUnsheathed())
@@ -226,7 +246,7 @@ bool AAGCharacter::TryWeaponAttack()
 		EndBasicAttackCombo();
 		return false;
 	}
-	
+
 	GetWorldTimerManager().SetTimer(TH_BasicAttackTimer, this, &AAGCharacter::EndBasicAttackCombo, AnimLength);
 
 	if (RangedWeaponEquipped())
@@ -235,7 +255,7 @@ bool AAGCharacter::TryWeaponAttack()
 	FRotator RotateTo;
 	RotateTo.Yaw = GetControlRotation().Yaw;
 	
-	LerpActorRotation(RotateTo, 5.0f);
+	LerpActorRotation(RotateTo, 0.2f);
 	
 	return true;
 }
@@ -276,6 +296,7 @@ void AAGCharacter::EndBasicAttackCombo()
 
 void AAGCharacter::ForceCancelAttack()
 {
+	CooldownBasicAttack(0.2f);
 	EndBasicAttackCombo();
 	ResetAirAttackCombo();
 	CancelActorRotationLerp();
@@ -343,8 +364,13 @@ void AAGCharacter::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 
-	if (IsValid(LandAnim))
-		GetMesh()->GetAnimInstance()->Montage_Play(LandAnim);
+	UAnimMontage* LandAnimToPlay = LandAnim;
+	
+	if (IsWeaponUnsheathed() && IsValid(LandCombatAnim))
+		LandAnimToPlay = LandCombatAnim;
+	
+	if (IsValid(LandAnimToPlay))
+		GetMesh()->GetAnimInstance()->Montage_Play(LandAnimToPlay);
 	else
 		UE_LOG(LogTemp, Warning, TEXT("AGCharacter | No valid land animation."))
 	
@@ -412,14 +438,16 @@ void AAGCharacter::OnJumped_Implementation()
 		UE_LOG(LogTemp, Warning, TEXT("AGCharacter | No valid jump animations."))
 }
 
-void AAGCharacter::LerpActorRotation(const FRotator& Rotation, const float& Speed)
+void AAGCharacter::LerpActorRotation(const FRotator& Rotation, const float& Duration)
 {
-	CancelActorRotationLerp();
-	
+	StartActorLerpRotation = GetActorRotation();
 	FinalActorLerpRotation = Rotation;
-	ActorLerpRotationSpeed = Speed;
+	ActorLerpRotationDuration = Duration;
+	bLerpActorRotation = true;
+	ActorLerpRotationAlpha = 0.0f;
 
-	GetWorldTimerManager().SetTimer(TH_LerpActorRotation, this, &AAGCharacter::LerpActorRotationTick, 0.01f, true);
+	if (Duration > 0.0f)
+		GetWorldTimerManager().SetTimer(TH_LerpActorRotation, this, &AAGCharacter::CancelActorRotationLerp, Duration, true);
 }
 
 void AAGCharacter::AbilitySystemInit()
@@ -494,19 +522,23 @@ UAnimMontage* AAGCharacter::GetJumpStartAnim() const
 	return AnimToPlay;
 }
 
-void AAGCharacter::LerpActorRotationTick()
+void AAGCharacter::CooldownBasicAttack(float Duration)
 {
-	const FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), FinalActorLerpRotation,
-		GetWorld()->DeltaTimeSeconds, ActorLerpRotationSpeed);
-	
-	SetActorRotation(NewRotation);
+	bBasicAttackCooldown = true;
 
-	if ((GetActorRotation() - FinalActorLerpRotation).IsNearlyZero(0.1))
-		CancelActorRotationLerp();
+	if (Duration > 0.0f)
+		GetWorld()->GetTimerManager().SetTimer(TH_BasicAttackCooldown, this, &AAGCharacter::EnableBasicAttack, Duration);
+}
+
+void AAGCharacter::EnableBasicAttack()
+{
+	GetWorld()->GetTimerManager().ClearTimer(TH_BasicAttackCooldown);
+	bBasicAttackCooldown = false;
 }
 
 void AAGCharacter::CancelActorRotationLerp()
 {
-	GetWorldTimerManager().ClearTimer(TH_LerpActorRotation);
+	GetWorld()->GetTimerManager().ClearTimer(TH_LerpActorRotation);
+	bLerpActorRotation = false;
 }
 
