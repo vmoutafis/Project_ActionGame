@@ -6,7 +6,6 @@
 #include "AGCustomObjectTraceChannels.h"
 #include "AGHelperFunctions.h"
 #include "AGPlayerController.h"
-#include "GameplayEffectTypes.h"
 #include "3DWidgetActors/AG3DWidgetPlayerActor.h"
 #include "AbilitySystem/AGAttributeSet.h"
 #include "Camera/CameraComponent.h"
@@ -86,8 +85,21 @@ void AAGPlayerCharacter::EquipWeapon(const FInventoryItem* Item)
 		Cast<AAGPlayerController>(GetController())->GetPlayer3DWidget()->SetWeapon(WeaponMesh);
 }
 
+void AAGPlayerCharacter::MovePlayer(FVector2D Axis)
+{
+	const FRotator RotYaw = FRotator(0.0f, GetControlRotation().Yaw, 0.0f);
+
+	AddMovementInput(RotYaw.Vector(), Axis.X);
+	AddMovementInput(RotYaw.RotateVector(FVector::RightVector), Axis.Y);
+
+	if (Axis.SquaredLength() > 0.0f)
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+	else
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+}
+
 void AAGPlayerCharacter::OnLootColliderOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                                  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	AAGLoot* LootItem = Cast<AAGLoot>(OtherActor);
 	

@@ -120,13 +120,11 @@ void AAGPlayerController::HandleMovement(const FInputActionInstance& Action)
 		return;
 	
 	const FVector2D Axis = Action.GetValue().Get<FVector2D>();
-	const FRotator RotYaw = FRotator(0.0f, GetControlRotation().Yaw, 0.0f);
-
-	PlayerRef->AddMovementInput(RotYaw.Vector(), Axis.X);
-	PlayerRef->AddMovementInput(RotYaw.RotateVector(FVector::RightVector), Axis.Y);
 
 	MovementInputVector.X = Axis.X;
 	MovementInputVector.Y = Axis.Y;
+
+	PlayerRef->MovePlayer(Axis);
 }
 
 void AAGPlayerController::HandleCamera(const FInputActionInstance& Action)

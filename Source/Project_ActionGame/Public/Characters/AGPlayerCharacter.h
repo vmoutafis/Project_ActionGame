@@ -28,6 +28,8 @@ public:
 	bool TryInteract();
 
 	virtual void EquipWeapon(const FInventoryItem* Item) override;
+
+	void MovePlayer(FVector2D Axis);
 	
 protected:
 	UFUNCTION()

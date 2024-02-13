@@ -333,11 +333,6 @@ void AAGCharacter::TryJump(const bool& bPressed)
 	{
 		ForceCancelAttack();
 
-		UAnimMontage* JumpAnimToPlay = GetJumpStartAnim();
-		
-		if (IsValid(JumpAnimToPlay))
-			PlayAnimMontage(JumpAnimToPlay);
-
 		Jump();
 	}
 	else
@@ -348,6 +343,11 @@ void AAGCharacter::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 
+	if (IsValid(LandAnim))
+		GetMesh()->GetAnimInstance()->Montage_Play(LandAnim);
+	else
+		UE_LOG(LogTemp, Warning, TEXT("AGCharacter | No valid land animation."))
+	
 	ResetAirAttackCombo();
 	EndBasicAttackCombo();
 }
@@ -398,6 +398,18 @@ TEnumAsByte<EWeaponTypes> AAGCharacter::GetEquippedWeaponType() const
 		return EWeaponTypes::WT_None;
 
 	return GetEquippedWeapon()->GetWeaponType();
+}
+
+void AAGCharacter::OnJumped_Implementation()
+{
+	Super::OnJumped_Implementation();
+
+	UAnimMontage* JumpAnimToPlay = GetJumpStartAnim();
+		
+	if (IsValid(JumpAnimToPlay))
+		PlayAnimMontage(JumpAnimToPlay);
+	else
+		UE_LOG(LogTemp, Warning, TEXT("AGCharacter | No valid jump animations."))
 }
 
 void AAGCharacter::LerpActorRotation(const FRotator& Rotation, const float& Speed)
@@ -458,9 +470,28 @@ UAnimMontage* AAGCharacter::GetJumpStartAnim() const
 	if (JumpAnims.IsEmpty())
 		return nullptr;
 
-	float Direction = UKismetAnimationLibrary::CalculateDirection(GetVelocity(), GetActorRotation());
+	UAnimMontage* AnimToPlay = JumpAnims[0];
+	const float Direction = UKismetAnimationLibrary::CalculateDirection(GetVelocity(), GetActorRotation());
+
+	if (Direction >= -45.0f && Direction <= 45.0f)
+	{
+		if (JumpAnims.IsValidIndex(0))
+			AnimToPlay = JumpAnims[0];
+	}
+	else if (Direction > -125.0f && Direction < -45.0f)
+	{
+		if (JumpAnims.IsValidIndex(1))
+			AnimToPlay = JumpAnims[1];
+	}
+	else if (Direction > 45.0f && Direction < 125.0f)
+	{
+		if (JumpAnims.IsValidIndex(2))
+			AnimToPlay = JumpAnims[2];
+	}
+	else if (JumpAnims.IsValidIndex(3))
+		AnimToPlay = JumpAnims[3];
 	
-	return JumpAnims[0];
+	return AnimToPlay;
 }
 
 void AAGCharacter::LerpActorRotationTick()

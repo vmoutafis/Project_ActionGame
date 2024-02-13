@@ -81,7 +81,9 @@ public:
 	AAGWeaponRanged* GetRangedWeapon() const;
 
 	TEnumAsByte<EWeaponTypes> GetEquippedWeaponType() const;
-	
+
+	virtual void OnJumped_Implementation() override;
+
 protected:
 	// Lerp the actor to a new rotation over time
 	// Run CancelActorRotationLerp() to stop
@@ -140,9 +142,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations|Weapon")
 	UAnimMontage* SheathWeaponAnim;
 
+	// 0 = Forward, 1 = Left, 2 = Right, 3 = Backward
 	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations|Jump")
 	TArray<UAnimMontage*> JumpStartAnims;
 
+	// 0 = Forward, 1 = Left, 2 = Right, 3 = Backward
 	UPROPERTY(EditDefaultsOnly, Category="Custom Character|Animations|Jump")
 	TArray<UAnimMontage*> JumpStartCombatAnims;
 	
