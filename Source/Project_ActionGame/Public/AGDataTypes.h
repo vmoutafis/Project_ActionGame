@@ -48,6 +48,14 @@ enum EWeaponTypes: uint8
 	WT_Pistol UMETA(DisplayName = "Pistol")
 };
 
+UENUM(BlueprintType)
+enum EWeaponSlots: uint8
+{
+	WS_Melee = 0 UMETA(DisplayName = "Melee"),
+	WS_Ranged UMETA(DisplayName = "Ranged")
+};
+
+
 USTRUCT(BlueprintType)
 struct FInventoryItem
 {

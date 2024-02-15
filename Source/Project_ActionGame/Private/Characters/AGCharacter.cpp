@@ -53,6 +53,8 @@ AAGCharacter::AAGCharacter()
 	RangedAttackRange = 1000.0f;
 
 	bBasicAttackCooldown = false;
+
+	ActiveWeaponSlot = EWeaponSlots::WS_Melee;
 }
 
 void AAGCharacter::Tick(float DeltaSeconds)
@@ -436,6 +438,21 @@ void AAGCharacter::OnJumped_Implementation()
 		PlayAnimMontage(JumpAnimToPlay);
 	else
 		UE_LOG(LogTemp, Warning, TEXT("AGCharacter | No valid jump animations."))
+}
+
+void AAGCharacter::SwitchWeapon()
+{
+	switch (ActiveWeaponSlot)
+	{
+	case WS_Melee:
+		ActiveWeaponSlot = WS_Ranged;
+		break;
+	case WS_Ranged:
+		ActiveWeaponSlot = WS_Melee;
+		break;
+	default:
+		break;
+	}
 }
 
 void AAGCharacter::LerpActorRotation(const FRotator& Rotation, const float& Duration)

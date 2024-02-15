@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "AGCharacter.generated.h"
 
+enum EWeaponSlots : uint8;
 enum EWeaponTypes : uint8;
 class AAGWeaponRanged;
 class AAGWeaponMelee;
@@ -85,6 +86,8 @@ public:
 	TEnumAsByte<EWeaponTypes> GetEquippedWeaponType() const;
 
 	virtual void OnJumped_Implementation() override;
+
+	void SwitchWeapon();
 
 protected:
 	// Lerp the actor to a new rotation over time
@@ -204,4 +207,6 @@ protected:
 	float RangedAttackRange;
 
 	bool bBasicAttackCooldown;
+
+	TEnumAsByte<EWeaponSlots> ActiveWeaponSlot;
 };

@@ -61,7 +61,9 @@ void AAGPlayerController::SetupInputComponent()
 	Input->BindAction(IA_Movement, ETriggerEvent::Completed, this, &AAGPlayerController::HandleMovement);
 	
 	Input->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleJump);
-	
+
+	Input->BindAction(IA_WeaponSwitch, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleWeaponSwitch);
+
 	Input->BindAction(IA_Camera, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleCamera);
 	Input->BindAction(IA_BasicAttack, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleBasicAttack);
 	Input->BindAction(IA_ToggleSheath, ETriggerEvent::Triggered, this, &AAGPlayerController::HandleWeaponSheath);
@@ -178,4 +180,12 @@ void AAGPlayerController::HandleJump(const FInputActionInstance& Action)
 		return;
 	
 	PlayerRef->TryJump(Action.GetValue().Get<bool>());
+}
+
+void AAGPlayerController::HandleWeaponSwitch(const FInputActionInstance& Action)
+{
+	if (!IsValid(PlayerRef))
+		return;
+
+	PlayerRef->SwitchWeapon();
 }

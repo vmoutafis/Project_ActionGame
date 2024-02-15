@@ -59,6 +59,8 @@ private:
 
 	void HandleJump(const FInputActionInstance& Action);
 
+	void HandleWeaponSwitch(const FInputActionInstance& Action);
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="Input|IMC")
 	TSoftObjectPtr<UInputMappingContext> IMC_Locomotion;
@@ -95,6 +97,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Input|Actions")
 	UInputAction* IA_ToggleGameMenu;
+
+	UPROPERTY(EditDefaultsOnly, Category="Input|Actions")
+	UInputAction* IA_WeaponSwitch;
 
 	UPROPERTY()
 	AAGPlayerCharacter* PlayerRef;

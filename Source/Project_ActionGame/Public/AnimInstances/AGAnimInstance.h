@@ -6,6 +6,7 @@
 #include "Animation/AnimInstance.h"
 #include "AGAnimInstance.generated.h"
 
+enum EWeaponSlots : uint8;
 enum EWeaponTypes : uint8;
 /**
  * 
