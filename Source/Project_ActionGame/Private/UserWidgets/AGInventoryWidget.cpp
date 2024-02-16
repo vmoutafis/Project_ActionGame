@@ -34,6 +34,7 @@ UAGInventoryWidget::UAGInventoryWidget(const FObjectInitializer& ObjectInitializ
 	ISW_Legs = nullptr;
 	ISW_Feet = nullptr;
 	ISW_Weapon = nullptr;
+	ISW_SecondaryWeapon = nullptr;
 	IIW_ItemInfo = nullptr;
 	AbilitySystemComponent = nullptr;
 	STAT_MaxHealth = nullptr;
@@ -128,7 +129,8 @@ TArray<UAGInventorySlotWidget*> UAGInventoryWidget::GetAllEquipmentSlots() const
 		ISW_Ring,
 		ISW_Legs,
 		ISW_Feet,
-		ISW_Weapon
+		ISW_Weapon,
+		ISW_SecondaryWeapon
 	};
 }
 

@@ -103,6 +103,9 @@ public:
 	UAGInventorySlotWidget* ISW_Weapon;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Inventory, meta=(BindWidget))
+	UAGInventorySlotWidget* ISW_SecondaryWeapon;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Transient, Category=Inventory, meta=(BindWidget))
 	UAGItemInfoWidget* IIW_ItemInfo;
 
 	// Stat text

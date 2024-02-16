@@ -54,7 +54,7 @@ AAGCharacter::AAGCharacter()
 
 	bBasicAttackCooldown = false;
 
-	ActiveWeaponSlot = EWeaponSlots::WS_Melee;
+	ActiveWeaponSlot = 0;
 }
 
 void AAGCharacter::Tick(float DeltaSeconds)
@@ -141,13 +141,17 @@ void AAGCharacter::ToggleSheath()
 
 void AAGCharacter::EquipWeapon(const FInventoryItem* Item)
 {
+	if (Cast<AAGDLootGearWeapon>(Item->LootClass.GetDefaultObject())->WeaponClass == Weapon->GetChildActor()->GetClass())
+		return;
+	
 	ForceCancelAttack();
-	SheathWeapon(true);
+	//SheathWeapon(true);
 
 	ClearWeaponDamage();
 	
 	if (Item == nullptr)
 	{
+		SheathWeapon(true);
 		Weapon->SetChildActorClass(nullptr);
 		return;
 	}
@@ -190,6 +194,14 @@ void AAGCharacter::EquipWeapon(const FInventoryItem* Item)
 	}
 
 	AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+}
+
+void AAGCharacter::AddToWeaponEquippedSlot(FInventoryItem* Item, int Slot)
+{
+	if (!WeaponInventory.IsValidIndex(Slot))
+		return;
+	
+	WeaponInventory[Slot] = Item;
 }
 
 void AAGCharacter::UnsheathWeapon(const bool& bInstant)
@@ -442,17 +454,12 @@ void AAGCharacter::OnJumped_Implementation()
 
 void AAGCharacter::SwitchWeapon()
 {
-	switch (ActiveWeaponSlot)
-	{
-	case WS_Melee:
-		ActiveWeaponSlot = WS_Ranged;
-		break;
-	case WS_Ranged:
-		ActiveWeaponSlot = WS_Melee;
-		break;
-	default:
-		break;
-	}
+	ActiveWeaponSlot++;
+
+	if (ActiveWeaponSlot > WeaponInventory.Num() - 1)
+		ActiveWeaponSlot = 0;
+
+	EquipWeapon(WeaponInventory[ActiveWeaponSlot]);
 }
 
 void AAGCharacter::LerpActorRotation(const FRotator& Rotation, const float& Duration)

@@ -7,7 +7,6 @@
 #include "GameFramework/Character.h"
 #include "AGCharacter.generated.h"
 
-enum EWeaponSlots : uint8;
 enum EWeaponTypes : uint8;
 class AAGWeaponRanged;
 class AAGWeaponMelee;
@@ -40,6 +39,8 @@ public:
 	void ToggleSheath();
 
 	virtual void EquipWeapon(const FInventoryItem* Item);
+
+	void AddToWeaponEquippedSlot(FInventoryItem* Item, int Slot = 0);
 
 	// UnSheath the players weapon by playing the anim
 	// Should be an anim notify that runs AttachWeaponToHand()
@@ -208,5 +209,7 @@ protected:
 
 	bool bBasicAttackCooldown;
 
-	TEnumAsByte<EWeaponSlots> ActiveWeaponSlot;
+	TArray<FInventoryItem*> WeaponInventory;
+	
+	int ActiveWeaponSlot;
 };

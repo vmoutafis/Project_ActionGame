@@ -18,6 +18,7 @@ UAGSaveGame::UAGSaveGame()
 	PlayerEquipment[EGearType::GT_Legs].GearType = EGearType::GT_Legs;
 	PlayerEquipment[EGearType::GT_Feet].GearType = EGearType::GT_Feet;
 	PlayerEquipment[EGearType::GT_Weapon].GearType = EGearType::GT_Weapon;
+	PlayerEquipment[EGearType::GT_Weapon].GearType = EGearType::GT_Weapon;
 }
 
 bool UAGSaveGame::AddItemToInventory(const FInventoryItem& Item)
