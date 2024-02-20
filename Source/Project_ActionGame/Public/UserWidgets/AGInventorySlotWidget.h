@@ -25,7 +25,7 @@ public:
 
 	void SetSlot(UAGInventoryWidget* Widget, const FInventoryItem* NewItem, const int& Index);
 
-	void SetAsEquipmentSlot(TEnumAsByte<EGearType> DefaultGearType);
+	void SetAsEquipmentSlot(TEnumAsByte<EEquipmentSlots> Slot);
 
 	virtual void NativeConstruct() override;
 
@@ -48,7 +48,9 @@ public:
 	virtual FReply NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
-	
+
+	TEnumAsByte<EEquipmentSlots> GetEquipmentType() const { return EquipmentType; }
+
 protected:
 	void UpdateSlot(const bool& bForceEmpty = false);
 
@@ -81,4 +83,6 @@ protected:
 
 	UPROPERTY()
 	UAGInventoryWidget* InventoryWidget;
+
+	TEnumAsByte<EEquipmentSlots> EquipmentType;
 };

@@ -34,4 +34,6 @@ public:
 	static void AGObjectWarning(const UObject* Object, const FString& Message);
 
 	static void AGObjectError(const UObject* Object,const FString& Message);
+
+	static TEnumAsByte<EGearType> ConvertEquipSlotToGearType(TEnumAsByte<EEquipmentSlots> Slot);
 };

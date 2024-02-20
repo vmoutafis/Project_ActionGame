@@ -163,10 +163,10 @@ void UAGInventoryWidget::UpdateInventory()
 			Column++;
 	}
 
-	for (int i = 0; i < GetAllEquipmentSlots().Num(); ++i)
+	for (int32 i = 0; i < GetAllEquipmentSlots().Num(); ++i)
 	{
 		GetAllEquipmentSlots()[i]->SetSlot(this, &GI->GetAllEquipment()[i], i);
-		GetAllEquipmentSlots()[i]->SetAsEquipmentSlot(GI->GetAllEquipment()[i].GearType);
+		GetAllEquipmentSlots()[i]->SetAsEquipmentSlot(static_cast<TEnumAsByte<EEquipmentSlots>>(i));
 	}
 }
 

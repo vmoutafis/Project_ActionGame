@@ -8,17 +8,17 @@
 
 UAGSaveGame::UAGSaveGame()
 {
-	PlayerEquipment.SetNum(8);
+	PlayerEquipment.SetNum(9);
 
-	PlayerEquipment[EGearType::GT_Head].GearType = EGearType::GT_Head;
-	PlayerEquipment[EGearType::GT_Neck].GearType = EGearType::GT_Neck;
-	PlayerEquipment[EGearType::GT_UpperBody].GearType = EGearType::GT_UpperBody;
-	PlayerEquipment[EGearType::GT_Hands].GearType = EGearType::GT_Hands;
-	PlayerEquipment[EGearType::GT_Ring].GearType = EGearType::GT_Ring;
-	PlayerEquipment[EGearType::GT_Legs].GearType = EGearType::GT_Legs;
-	PlayerEquipment[EGearType::GT_Feet].GearType = EGearType::GT_Feet;
-	PlayerEquipment[EGearType::GT_Weapon].GearType = EGearType::GT_Weapon;
-	PlayerEquipment[EGearType::GT_Weapon].GearType = EGearType::GT_Weapon;
+	PlayerEquipment[ES_Hands].GearType = GT_Head;
+	PlayerEquipment[ES_Neck].GearType = GT_Neck;
+	PlayerEquipment[ES_UpperBody].GearType = GT_UpperBody;
+	PlayerEquipment[ES_Hands].GearType = GT_Hands;
+	PlayerEquipment[ES_Ring].GearType = GT_Ring;
+	PlayerEquipment[ES_Legs].GearType = GT_Legs;
+	PlayerEquipment[ES_Feet].GearType = GT_Feet;
+	PlayerEquipment[ES_Weapon].GearType = GT_Weapon;
+	PlayerEquipment[ES_SecondaryWeapon].GearType = GT_Weapon;
 }
 
 bool UAGSaveGame::AddItemToInventory(const FInventoryItem& Item)
@@ -38,36 +38,52 @@ bool UAGSaveGame::AddItemToInventory(const FInventoryItem& Item)
 	return false;
 }
 
-FInventoryItem UAGSaveGame::GetEquipmentItem(TEnumAsByte<EGearType> GearType) const
+FInventoryItem UAGSaveGame::GetEquipmentItem(TEnumAsByte<EEquipmentSlots> Slot) const
 {
-	return PlayerEquipment[GearType];
+	return PlayerEquipment[Slot];
 }
 
-void UAGSaveGame::SetEquipmentItem(TEnumAsByte<EGearType> GearType, const FInventoryItem& Item)
+void UAGSaveGame::SetEquipmentItem(TEnumAsByte<EEquipmentSlots> GearType, const FInventoryItem& Item)
 {
 	PlayerEquipment[GearType] = Item;
-	PlayerEquipment[GearType].GearType = GearType;
+	PlayerEquipment[GearType].GearType = Item.GearType;
 
-	UAGHelperFunctions::AGSimpleWarning("Equipment Item Set.");
-	Delegate_EquipmentUpdated.Broadcast(GearType);
+	Delegate_EquipmentUpdated.Broadcast(Item.GearType);
 }
 
-bool UAGSaveGame::ActivateInventoryItem(const int& Index)
+bool UAGSaveGame::ActivateInventoryItem(const int& Index, TEnumAsByte<EEquipmentSlots> Slot)
 {
 	if (!PlayerInventory.IsValidIndex(Index))
 		return false;
 
 	if (PlayerInventory[Index].LootClass->IsChildOf(AAGDLootGearWeapon::StaticClass()))
 	{
-		const FInventoryItem CurrentItem = GetEquipmentItem(EGearType::GT_Weapon);
+		if (Slot == ES_None)
+		{
+			const bool bPrimaryEquipped = !GetEquipmentItem(ES_Weapon).bIsEmpty;
+			Slot = ES_Weapon;
 		
-		SetEquipmentItem(EGearType::GT_Weapon, PlayerInventory[Index]);
+			if (bPrimaryEquipped)
+				Slot = ES_SecondaryWeapon;
+		}
+
+		const FInventoryItem CurrentItem = GetEquipmentItem(Slot);
+			
+		SetEquipmentItem(Slot, PlayerInventory[Index]);
 
 		PlayerInventory[Index] = CurrentItem;
-		PlayerInventory[Index].GearType = EGearType::GT_None;
+		PlayerInventory[Index].GearType = GT_None;
 	}
 
 	return true;
+}
+
+void UAGSaveGame::SwapEquippedWeapons()
+{
+	const FInventoryItem OldPrimary = PlayerEquipment[ES_Weapon];
+
+	PlayerEquipment[ES_Weapon] = PlayerEquipment[ES_SecondaryWeapon];
+	PlayerEquipment[ES_SecondaryWeapon] = OldPrimary;
 }
 
 void UAGSaveGame::SwapInventoryItems(const int& ItemIndex1, const int& ItemIndex2)
@@ -84,17 +100,17 @@ void UAGSaveGame::SwapInventoryItems(const int& ItemIndex1, const int& ItemIndex
 	PlayerInventory[ItemIndex2] = Item1Ref;
 }
 
-bool UAGSaveGame::UnEquipToInventory(TEnumAsByte<EGearType> GearTypeSlot, const int& InventorySlot)
+bool UAGSaveGame::UnEquipToInventory(TEnumAsByte<EEquipmentSlots> EquipmentSlot, const int& InventorySlot)
 {
 	if (!PlayerInventory.IsValidIndex(InventorySlot))
 		return false;
 
 	const FInventoryItem InventoryItem = PlayerInventory[InventorySlot];
 	
-	PlayerInventory[InventorySlot] = PlayerEquipment[GearTypeSlot];
-	PlayerInventory[InventorySlot].GearType = EGearType::GT_None;
+	PlayerInventory[InventorySlot] = PlayerEquipment[EquipmentSlot];
+	PlayerInventory[InventorySlot].GearType = GT_None;
 
-	SetEquipmentItem(GearTypeSlot, InventoryItem);
+	SetEquipmentItem(EquipmentSlot, InventoryItem);
 	
 	return true;
 }

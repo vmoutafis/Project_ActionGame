@@ -91,25 +91,37 @@ TArray<FInventoryItem> UAGGameInstance::GetAllEquipment()
 	return SaveGame->PlayerEquipment;
 }
 
-FInventoryItem UAGGameInstance::GetEquipmentByType(TEnumAsByte<EGearType> GearType)
+FInventoryItem UAGGameInstance::GetEquipmentBySlot(TEnumAsByte<EEquipmentSlots> Slot)
 {
 	if (!CreateSaveGameObject())
 		return FInventoryItem();
 		
-	return SaveGame->GetEquipmentItem(GearType);
+	return SaveGame->GetEquipmentItem(Slot);
 }
 
-bool UAGGameInstance::ActivateInventoryItem(const int& Index)
+bool UAGGameInstance::ActivateInventoryItem(const int& Index, TEnumAsByte<EEquipmentSlots> Slot)
 {
 	if (!CreateSaveGameObject())
 		return false;
 
-	const bool Result = SaveGame->ActivateInventoryItem(Index);
+	const bool Result = SaveGame->ActivateInventoryItem(Index, Slot);
 
 	if (Result)
 		Delegate_InventoryUpdated.Broadcast();
 	
 	return Result;
+}
+
+bool UAGGameInstance::SwapEquippedWeapons()
+{
+	if (!CreateSaveGameObject())
+		return false;
+
+	SaveGame->SwapEquippedWeapons();
+
+	Delegate_InventoryUpdated.Broadcast();
+
+	return true;
 }
 
 UAGSaveGame* UAGGameInstance::CreateSaveGameObject(const bool& ForceNew)
@@ -130,7 +142,7 @@ void UAGGameInstance::EquipmentUpdated(TEnumAsByte<EGearType> GearType)
 	{
 		if (GearType == EGearType::GT_Weapon)
 		{
-			const FInventoryItem Item = GetEquipmentByType(GearType);
+			const FInventoryItem Item = GetEquipmentBySlot(GearType);
 			const FInventoryItem* ItemObj = nullptr;
 
 			if (!Item.bIsEmpty)

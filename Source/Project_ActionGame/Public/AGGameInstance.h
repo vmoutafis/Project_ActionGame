@@ -43,9 +43,11 @@ public:
 	
 	TArray<FInventoryItem> GetAllEquipment();
 	
-	FInventoryItem GetEquipmentByType(TEnumAsByte<EGearType> GearType);
+	FInventoryItem GetEquipmentBySlot(TEnumAsByte<EEquipmentSlots> Slot);
 
-	bool ActivateInventoryItem(const int& Index);
+	bool ActivateInventoryItem(const int& Index, TEnumAsByte<EEquipmentSlots> Slot = ES_None);
+
+	bool SwapEquippedWeapons();
 
 protected:
 	UAGSaveGame* CreateSaveGameObject(const bool& ForceNew = false);

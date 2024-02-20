@@ -103,3 +103,42 @@ void UAGHelperFunctions::AGObjectError(const UObject* Object, const FString& Mes
 {
 	AGSimpleError(FString(Object->GetName()) + ": " + Message);
 }
+
+TEnumAsByte<EGearType> UAGHelperFunctions::ConvertEquipSlotToGearType(TEnumAsByte<EEquipmentSlots> Slot)
+{
+	TEnumAsByte<EGearType> ConvertedType = GT_None;
+	
+	switch (Slot)
+	{
+		case ES_Head :
+			ConvertedType = GT_Head;
+			break;
+		case ES_UpperBody :
+			ConvertedType = GT_UpperBody;
+			break;
+		case ES_Neck :
+			ConvertedType = GT_Neck;
+			break;
+		case ES_Hands :
+			ConvertedType = GT_Hands;
+			break;
+		case ES_Ring :
+			ConvertedType = GT_Ring;
+			break;
+		case ES_Legs :
+			ConvertedType = GT_Legs;
+			break;
+		case ES_Feet :
+			ConvertedType = GT_Feet;
+			break;
+		case ES_Weapon :
+			ConvertedType = GT_Weapon;
+			break;
+		case ES_SecondaryWeapon :
+			ConvertedType = GT_Weapon;
+			break;
+		default: break;
+	}
+
+	return ConvertedType;
+}

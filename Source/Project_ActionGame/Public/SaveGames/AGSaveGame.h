@@ -23,15 +23,17 @@ public:
 	
 	bool AddItemToInventory(const FInventoryItem& Item);
 
-	FInventoryItem GetEquipmentItem(TEnumAsByte<EGearType> GearType) const;
+	FInventoryItem GetEquipmentItem(TEnumAsByte<EEquipmentSlots> GearType) const;
 
-	void SetEquipmentItem(TEnumAsByte<EGearType> GearType, const FInventoryItem& Item);
+	void SetEquipmentItem(TEnumAsByte<EEquipmentSlots> GearType, const FInventoryItem& Item);
 
-	bool ActivateInventoryItem(const int& Index);
+	bool ActivateInventoryItem(const int& Index, TEnumAsByte<EEquipmentSlots> Slot = ES_None);
+
+	void SwapEquippedWeapons();
 
 	void SwapInventoryItems(const int& ItemIndex1, const int& ItemIndex2);
 
-	bool UnEquipToInventory(TEnumAsByte<EGearType> GearTypeSlot, const int& InventorySlot);
+	bool UnEquipToInventory(TEnumAsByte<EEquipmentSlots> EquipmentSlot, const int& InventorySlot);
 
 	UPROPERTY()
 	FNoInventorySpace Delegate_NoInventorySpace;

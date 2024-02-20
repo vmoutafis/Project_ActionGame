@@ -32,6 +32,21 @@ enum EGearType: uint8
 };
 
 UENUM(BlueprintType)
+enum EEquipmentSlots: uint8
+{
+	ES_Head = 0 UMETA(DisplayName = "Head"),
+	ES_Neck UMETA(DisplayName = "Neck"),
+	ES_UpperBody UMETA(DisplayName = "Upper Body"),
+	ES_Hands UMETA(DisplayName = "Hands"),
+	ES_Ring UMETA(DisplayName = "Ring"),
+	ES_Legs UMETA(DisplayName = "Legs"),
+	ES_Feet UMETA(DisplayName = "Feet"),
+	ES_Weapon UMETA(DisplayName = "Weapon"),
+	ES_SecondaryWeapon UMETA(DisplayName = "Secondary Weapon"),
+	ES_None UMETA(DisplayName = "None")
+};
+
+UENUM(BlueprintType)
 enum ESpecialDamageTypes: uint8
 {
 	SDT_None = 0 UMETA(DisplayName = "None"),
