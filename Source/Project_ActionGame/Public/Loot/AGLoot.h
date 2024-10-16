@@ -20,7 +20,7 @@ public:
 
 	virtual void BeginPlay() override;
 	
-	virtual void Collect();
+	virtual void Collect(TEnumAsByte<EGearType> GearType = GT_None);
 
 	void EnableCollectUI(bool bEnable);
 	

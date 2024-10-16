@@ -58,14 +58,14 @@ void AAGLoot::BeginPlay()
 	Rarity = UAGHelperFunctions::GetRandomRarity();
 }
 
-void AAGLoot::Collect()
+void AAGLoot::Collect(TEnumAsByte<EGearType> GearType)
 {
 	UAGGameInstance* GI = Cast<UAGGameInstance>(GetGameInstance());
 
 	if (!IsValid(GI))
 		return;
 
-	if (GI->CollectLoot(FInventoryItem(GetClass(), Rarity)))
+	if (GI->CollectLoot(FInventoryItem(GetClass(), Rarity, GearType)))
 	{
 		EnableCollectUI(false);
 		Destroy();

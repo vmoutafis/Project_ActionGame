@@ -5,6 +5,11 @@
 
 #include "AGHelperFunctions.h"
 
+AAGLootGear::AAGLootGear()
+{
+	Type = GT_Weapon;
+}
+
 void AAGLootGear::BeginPlay()
 {
 	Super::BeginPlay();
@@ -17,4 +22,12 @@ void AAGLootGear::BeginPlay()
 
 		DynMat->SetVectorParameterValue(FName("Emissive Colour Tint"), RarityColour);
 	}
+}
+
+void AAGLootGear::Collect(TEnumAsByte<EGearType> GearType)
+{
+	if (Type == GT_None)
+		return;
+	
+	Super::Collect(Type);
 }

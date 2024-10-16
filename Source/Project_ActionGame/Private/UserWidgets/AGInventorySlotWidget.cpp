@@ -6,12 +6,10 @@
 #include "AGGameInstance.h"
 #include "AGHelperFunctions.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
-#include "Components/CanvasPanelSlot.h"
 #include "Components/Image.h"
 #include "Loot/AGDLootGearWeapon.h"
 #include "Loot/AGLoot.h"
 #include "UserWidgets/AGInventoryWidget.h"
-#include "UserWidgets/AGItemInfoWidget.h"
 #include "UserWidgets/DDOs/AGInventorySlotDDO.h"
 
 UAGInventorySlotWidget::UAGInventorySlotWidget(const FObjectInitializer& ObjectInitializer)
@@ -26,7 +24,6 @@ UAGInventorySlotWidget::UAGInventorySlotWidget(const FObjectInitializer& ObjectI
 	bDebugHighlight = false;
 	InventoryIndex = -1;
 	InventoryWidget = nullptr;
-	EquipmentType = ES_None;
 }
 
 void UAGInventorySlotWidget::SetSlot(UAGInventoryWidget* Widget, const FInventoryItem* NewItem, const int& Index)
@@ -48,10 +45,10 @@ void UAGInventorySlotWidget::SetSlot(UAGInventoryWidget* Widget, const FInventor
 	UpdateSlot();
 }
 
-void UAGInventorySlotWidget::SetAsEquipmentSlot(TEnumAsByte<EEquipmentSlots> Slot)
+void UAGInventorySlotWidget::SetAsEquipmentSlot(TEnumAsByte<EEquipmentSlots> EquipSlot)
 {
-	Item.GearType = UAGHelperFunctions::ConvertEquipSlotToGearType(Slot);
-	EquipmentType = Slot;
+	Item.GearType = UAGHelperFunctions::ConvertEquipSlotToGearType(EquipSlot);
+	Item.EquipmentSlot = EquipSlot;
 }
 
 void UAGInventorySlotWidget::NativeConstruct()
@@ -122,8 +119,8 @@ FReply UAGInventorySlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& I
 	if (Item.GearType != EGearType::GT_None)
 		return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
 
-	UAGGameInstance* GI = Cast<UAGGameInstance>(GetGameInstance());
-	GI->ActivateInventoryItem(InventoryIndex);
+	if (UAGGameInstance* GI = Cast<UAGGameInstance>(GetGameInstance()))
+		GI->ActivateInventoryItem(InventoryIndex, ES_Weapon);
 
 	EnableItemInfoWidget(false);
 	
@@ -182,42 +179,37 @@ bool UAGInventorySlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDr
 	if (!IsValid(DragDrop))
 		return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 
-	const TEnumAsByte<EGearType> ItemGearType = Item.GearType;
-	const TEnumAsByte<EGearType> DropItemGearType = DragDrop->WidgetRef->Item.GearType;
+	const FInventoryItem DragItem = DragDrop->WidgetRef->Item;
 
 	// if trying to slot an equipment item onto another equipment item
-	if (DropItemGearType != GT_None && ItemGearType != GT_None)
+	if ((DragItem.EquipmentSlot == ES_Weapon || DragItem.EquipmentSlot == ES_SecondaryWeapon) &&
+		(Item.EquipmentSlot == ES_Weapon || Item.EquipmentSlot == ES_SecondaryWeapon))
 	{
 		// if it's a weapon allow it for switching
-		if (DragDrop->WidgetRef->Item.LootClass->IsChildOf(AAGDLootGearWeapon::StaticClass()) && ItemGearType == GT_Weapon)
-			GI->ActivateInventoryItem(DragDrop->WidgetRef->InventoryIndex, GetEquipmentType());
+		if (DragItem.LootClass->IsChildOf(AAGDLootGearWeapon::StaticClass()))
+			GI->SwapEquippedWeapons();
 
 		return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 	}
 	
 	// if drop item is equipment and this slot is inventory
-	if (DropItemGearType != GT_None && ItemGearType == GT_None)
+	if (DragItem.EquipmentSlot != ES_None && Item.EquipmentSlot == ES_None)
 	{
-		if (DropItemGearType == GT_Weapon)
-		{
-			if (Item.bIsEmpty || Item.LootClass->IsChildOf(AAGDLootGearWeapon::StaticClass()))
-				GI->UnEquipToInventory(GT_Weapon, InventoryIndex);
-		}
+		GI->UnEquipToInventory(DragDrop->WidgetRef->GetEquipmentType(), InventoryIndex);
 		
 		return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 	}
 
-	// if the above are false and this slot is not and equipment slot
-	if (ItemGearType == GT_None)
+	// if both slots are inventory slots
+	if (DragItem.EquipmentSlot == ES_None && Item.EquipmentSlot == ES_None)
 	{
 		GI->SwapInventoryItems(DragDrop->WidgetRef->InventoryIndex, InventoryIndex);
-		
+
 		return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 	}
 
-	// if the type is a weapon
-	if (DragDrop->WidgetRef->Item.LootClass->IsChildOf(AAGDLootGearWeapon::StaticClass()) && ItemGearType == GT_Weapon)
-		GI->ActivateInventoryItem(DragDrop->WidgetRef->InventoryIndex, GetEquipmentType());
+	// otherwise if it's inventory to equipment
+	GI->ActivateInventoryItem(DragDrop->WidgetRef->InventoryIndex, GetEquipmentType());
 	
 	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 }

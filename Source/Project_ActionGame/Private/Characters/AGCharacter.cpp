@@ -141,20 +141,23 @@ void AAGCharacter::ToggleSheath()
 
 void AAGCharacter::EquipWeapon(const FInventoryItem* Item)
 {
-	if (Cast<AAGDLootGearWeapon>(Item->LootClass.GetDefaultObject())->WeaponClass == Weapon->GetChildActor()->GetClass())
-		return;
-	
-	ForceCancelAttack();
-	//SheathWeapon(true);
-
-	ClearWeaponDamage();
-	
 	if (Item == nullptr)
 	{
 		SheathWeapon(true);
 		Weapon->SetChildActorClass(nullptr);
 		return;
 	}
+
+	if (IsValid(Weapon->GetChildActor()))
+	{
+		if (Cast<AAGDLootGearWeapon>(Item->LootClass.GetDefaultObject())->WeaponClass == Weapon->GetChildActor()->GetClass())
+			return;
+	}
+	
+	ForceCancelAttack();
+	//SheathWeapon(true);
+
+	ClearWeaponDamage();
 
 	const AAGDLootGearWeapon* WeaponLoot = Cast<AAGDLootGearWeapon>(Item->LootClass.GetDefaultObject());
 	

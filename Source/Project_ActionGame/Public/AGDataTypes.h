@@ -74,6 +74,7 @@ struct FInventoryItem
 		LootClass = nullptr;
 		Rarity = EItemRarity::IR_Common;
 		GearType = EGearType::GT_None;
+		EquipmentSlot = ES_None;
 	}
 
 	FInventoryItem(const FInventoryItem& Other)
@@ -82,15 +83,17 @@ struct FInventoryItem
 		LootClass = Other.LootClass;
 		Rarity = Other.Rarity;
 		GearType = Other.GearType;
+		EquipmentSlot = Other.EquipmentSlot;
 	}
 
-	FInventoryItem(TSubclassOf<AAGLoot> DefaultClass, TEnumAsByte<EItemRarity> DefaultRarity,
-		bool IsEmpty = false, TEnumAsByte<EGearType> DefaultGearType = EGearType::GT_None)
+	FInventoryItem(const TSubclassOf<AAGLoot>& DefaultClass, TEnumAsByte<EItemRarity> DefaultRarity, TEnumAsByte<EGearType> DefaultGearType = GT_None,
+		bool IsEmpty = false, TEnumAsByte<EEquipmentSlots> EquipSlot = ES_None)
 	{
 		bIsEmpty = IsEmpty;
 		LootClass = DefaultClass;
 		Rarity = DefaultRarity;
 		GearType = DefaultGearType;
+		EquipmentSlot = EquipSlot;
 	}
 
 	void Clear()
@@ -109,4 +112,7 @@ struct FInventoryItem
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TEnumAsByte<EGearType> GearType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TEnumAsByte<EEquipmentSlots> EquipmentSlot;
 };

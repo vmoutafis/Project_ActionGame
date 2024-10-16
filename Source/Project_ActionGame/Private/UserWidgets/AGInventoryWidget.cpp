@@ -163,11 +163,32 @@ void UAGInventoryWidget::UpdateInventory()
 			Column++;
 	}
 
-	for (int32 i = 0; i < GetAllEquipmentSlots().Num(); ++i)
-	{
-		GetAllEquipmentSlots()[i]->SetSlot(this, &GI->GetAllEquipment()[i], i);
-		GetAllEquipmentSlots()[i]->SetAsEquipmentSlot(static_cast<TEnumAsByte<EEquipmentSlots>>(i));
-	}
+	ISW_Head->SetSlot(this, &GI->GetAllEquipment()[0], 0);
+	ISW_Head->SetAsEquipmentSlot(static_cast<TEnumAsByte<EEquipmentSlots>>(0));
+	
+	ISW_Neck->SetSlot(this, &GI->GetAllEquipment()[1], 1);
+	ISW_Neck->SetAsEquipmentSlot(static_cast<TEnumAsByte<EEquipmentSlots>>(1));
+	
+	ISW_UpperBody->SetSlot(this, &GI->GetAllEquipment()[2], 2);
+	ISW_UpperBody->SetAsEquipmentSlot(static_cast<TEnumAsByte<EEquipmentSlots>>(2));
+	
+	ISW_Hands->SetSlot(this, &GI->GetAllEquipment()[3], 3);
+	ISW_Hands->SetAsEquipmentSlot(static_cast<TEnumAsByte<EEquipmentSlots>>(3));
+	
+	ISW_Ring->SetSlot(this, &GI->GetAllEquipment()[4], 4);
+	ISW_Ring->SetAsEquipmentSlot(static_cast<TEnumAsByte<EEquipmentSlots>>(4));
+	
+	ISW_Legs->SetSlot(this, &GI->GetAllEquipment()[5], 5);
+	ISW_Legs->SetAsEquipmentSlot(static_cast<TEnumAsByte<EEquipmentSlots>>(5));
+	
+	ISW_Feet->SetSlot(this, &GI->GetAllEquipment()[6], 6);
+	ISW_Feet->SetAsEquipmentSlot(static_cast<TEnumAsByte<EEquipmentSlots>>(6));
+	
+	ISW_Weapon->SetSlot(this, &GI->GetAllEquipment()[7], 7);
+	ISW_Weapon->SetAsEquipmentSlot(static_cast<TEnumAsByte<EEquipmentSlots>>(7));
+	
+	ISW_SecondaryWeapon->SetSlot(this, &GI->GetAllEquipment()[8], 8);
+	ISW_SecondaryWeapon->SetAsEquipmentSlot(static_cast<TEnumAsByte<EEquipmentSlots>>(8));
 }
 
 void UAGInventoryWidget::InitialiseAbilitySystem()

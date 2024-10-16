@@ -29,7 +29,7 @@ public:
 
 	void SwapInventoryItems(const int& ItemIndex1, const int& ItemIndex2);
 
-	bool UnEquipToInventory(TEnumAsByte<EGearType> GearTypeSlot, const int& InventorySlot);
+	bool UnEquipToInventory(TEnumAsByte<EEquipmentSlots> EquipSlot, const int& InventorySlot);
 	
 	UPROPERTY()
 	FInventoryUpdated Delegate_InventoryUpdated;
@@ -53,7 +53,7 @@ protected:
 	UAGSaveGame* CreateSaveGameObject(const bool& ForceNew = false);
 
 	UFUNCTION()
-	void EquipmentUpdated(TEnumAsByte<EGearType> GearType);
+	void EquipmentUpdated(TEnumAsByte<EEquipmentSlots> GearType);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Inventory")

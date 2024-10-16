@@ -6,7 +6,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "SaveGames/AGSaveGame.h"
 #include "AGDataTypes.h"
-#include "AGHelperFunctions.h"
 #include "Characters/AGPlayerCharacter.h"
 
 UAGGameInstance::UAGGameInstance()
@@ -51,12 +50,12 @@ void UAGGameInstance::SwapInventoryItems(const int& ItemIndex1, const int& ItemI
 	Delegate_InventoryUpdated.Broadcast();
 }
 
-bool UAGGameInstance::UnEquipToInventory(TEnumAsByte<EGearType> GearTypeSlot, const int& InventorySlot)
+bool UAGGameInstance::UnEquipToInventory(TEnumAsByte<EEquipmentSlots> EquipSlot, const int& InventorySlot)
 {
 	if (!IsValid(CreateSaveGameObject()))
 		return false;
 
-	const bool Result = SaveGame->UnEquipToInventory(GearTypeSlot, InventorySlot);
+	const bool Result = SaveGame->UnEquipToInventory(EquipSlot, InventorySlot);
 
 	if (Result)
 		Delegate_InventoryUpdated.Broadcast();
@@ -136,13 +135,13 @@ UAGSaveGame* UAGGameInstance::CreateSaveGameObject(const bool& ForceNew)
 	return SaveGame;
 }
 
-void UAGGameInstance::EquipmentUpdated(TEnumAsByte<EGearType> GearType)
+void UAGGameInstance::EquipmentUpdated(TEnumAsByte<EEquipmentSlots> Slot)
 {
 	if (AAGPlayerCharacter* PlayerRef = Cast<AAGPlayerCharacter>(GetPrimaryPlayerController()->GetPawn()))
 	{
-		if (GearType == EGearType::GT_Weapon)
+		if (Slot == ES_Weapon)
 		{
-			const FInventoryItem Item = GetEquipmentBySlot(GearType);
+			const FInventoryItem Item = GetEquipmentBySlot(Slot);
 			const FInventoryItem* ItemObj = nullptr;
 
 			if (!Item.bIsEmpty)

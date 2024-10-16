@@ -15,6 +15,14 @@ class PROJECT_ACTIONGAME_API AAGLootGear : public AAGLoot
 	GENERATED_BODY()
 
 public:
+	AAGLootGear();
+	
 	virtual void BeginPlay() override;
+
+	virtual void Collect(TEnumAsByte<EGearType> GearType = GT_None) override;
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category=Gear)
+	TEnumAsByte<EGearType> Type;
 	
 };

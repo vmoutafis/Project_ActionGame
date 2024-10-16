@@ -65,7 +65,7 @@ void UAGItemInfoWidget::SetItem(const FInventoryItem& NewItem)
 		const float DamageValue = WeaponLoot->WeaponClass.GetDefaultObject()->GetFullWeaponDamageCustomRarity(Item.Rarity);
 
 		UAGGameInstance* GI = Cast<UAGGameInstance>(GetGameInstance());
-		const FInventoryItem WeaponRef = GI->GetEquipmentBySlot(GT_Weapon);
+		const FInventoryItem WeaponRef = GI->GetEquipmentBySlot(ES_Weapon);
 		
 		if (IsValid(DamageText))
 		{

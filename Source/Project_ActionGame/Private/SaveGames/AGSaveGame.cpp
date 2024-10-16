@@ -4,13 +4,12 @@
 #include "SaveGames/AGSaveGame.h"
 
 #include "AGHelperFunctions.h"
-#include "Loot/AGDLootGearWeapon.h"
 
 UAGSaveGame::UAGSaveGame()
 {
 	PlayerEquipment.SetNum(9);
 
-	PlayerEquipment[ES_Hands].GearType = GT_Head;
+	PlayerEquipment[ES_Head].GearType = GT_Head;
 	PlayerEquipment[ES_Neck].GearType = GT_Neck;
 	PlayerEquipment[ES_UpperBody].GearType = GT_UpperBody;
 	PlayerEquipment[ES_Hands].GearType = GT_Hands;
@@ -43,37 +42,23 @@ FInventoryItem UAGSaveGame::GetEquipmentItem(TEnumAsByte<EEquipmentSlots> Slot) 
 	return PlayerEquipment[Slot];
 }
 
-void UAGSaveGame::SetEquipmentItem(TEnumAsByte<EEquipmentSlots> GearType, const FInventoryItem& Item)
+void UAGSaveGame::SetEquipmentItem(TEnumAsByte<EEquipmentSlots> Slot, const FInventoryItem& Item)
 {
-	PlayerEquipment[GearType] = Item;
-	PlayerEquipment[GearType].GearType = Item.GearType;
+	PlayerEquipment[Slot] = Item;
 
-	Delegate_EquipmentUpdated.Broadcast(Item.GearType);
+	Delegate_EquipmentUpdated.Broadcast(Slot);
 }
 
 bool UAGSaveGame::ActivateInventoryItem(const int& Index, TEnumAsByte<EEquipmentSlots> Slot)
 {
-	if (!PlayerInventory.IsValidIndex(Index))
+	if (!PlayerInventory.IsValidIndex(Index) || Slot == ES_None)
 		return false;
 
-	if (PlayerInventory[Index].LootClass->IsChildOf(AAGDLootGearWeapon::StaticClass()))
-	{
-		if (Slot == ES_None)
-		{
-			const bool bPrimaryEquipped = !GetEquipmentItem(ES_Weapon).bIsEmpty;
-			Slot = ES_Weapon;
+	const FInventoryItem CurrentItem = GetEquipmentItem(Slot);
 		
-			if (bPrimaryEquipped)
-				Slot = ES_SecondaryWeapon;
-		}
+	SetEquipmentItem(Slot, PlayerInventory[Index]);
 
-		const FInventoryItem CurrentItem = GetEquipmentItem(Slot);
-			
-		SetEquipmentItem(Slot, PlayerInventory[Index]);
-
-		PlayerInventory[Index] = CurrentItem;
-		PlayerInventory[Index].GearType = GT_None;
-	}
+	PlayerInventory[Index] = CurrentItem;
 
 	return true;
 }
@@ -84,6 +69,8 @@ void UAGSaveGame::SwapEquippedWeapons()
 
 	PlayerEquipment[ES_Weapon] = PlayerEquipment[ES_SecondaryWeapon];
 	PlayerEquipment[ES_SecondaryWeapon] = OldPrimary;
+
+	Delegate_EquipmentUpdated.Broadcast(ES_Weapon);
 }
 
 void UAGSaveGame::SwapInventoryItems(const int& ItemIndex1, const int& ItemIndex2)
@@ -100,17 +87,20 @@ void UAGSaveGame::SwapInventoryItems(const int& ItemIndex1, const int& ItemIndex
 	PlayerInventory[ItemIndex2] = Item1Ref;
 }
 
-bool UAGSaveGame::UnEquipToInventory(TEnumAsByte<EEquipmentSlots> EquipmentSlot, const int& InventorySlot)
+bool UAGSaveGame::UnEquipToInventory(TEnumAsByte<EEquipmentSlots> Slot, const int& InventorySlot)
 {
 	if (!PlayerInventory.IsValidIndex(InventorySlot))
 		return false;
 
 	const FInventoryItem InventoryItem = PlayerInventory[InventorySlot];
-	
-	PlayerInventory[InventorySlot] = PlayerEquipment[EquipmentSlot];
-	PlayerInventory[InventorySlot].GearType = GT_None;
 
-	SetEquipmentItem(EquipmentSlot, InventoryItem);
+	UE_LOG(LogTemp, Warning, TEXT("Inv Slot: %i / %i | Equip Slot: %i / %i"),
+		InventorySlot, PlayerInventory.Num() - 1,
+		Slot.GetIntValue(), PlayerEquipment.Num() - 1);
+	
+	PlayerInventory[InventorySlot] = PlayerEquipment[Slot];
+
+	SetEquipmentItem(Slot, InventoryItem);
 	
 	return true;
 }
