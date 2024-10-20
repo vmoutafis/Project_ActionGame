@@ -147,12 +147,6 @@ void AAGCharacter::EquipWeapon(const FInventoryItem* Item)
 		Weapon->SetChildActorClass(nullptr);
 		return;
 	}
-
-	if (IsValid(Weapon->GetChildActor()))
-	{
-		if (Cast<AAGDLootGearWeapon>(Item->LootClass.GetDefaultObject())->WeaponClass == Weapon->GetChildActor()->GetClass())
-			return;
-	}
 	
 	ForceCancelAttack();
 	//SheathWeapon(true);

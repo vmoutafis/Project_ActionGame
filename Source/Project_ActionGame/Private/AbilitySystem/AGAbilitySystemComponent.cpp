@@ -40,6 +40,9 @@ void UAGAbilitySystemComponent::BeginPlay()
 
 const UAGAttributeSet* UAGAbilitySystemComponent::GetOwnerAttributes() const
 {
+	if (!IsValid(GetOwner()))
+		return nullptr;
+	
 	const AAGCharacter* CharRef =  Cast<AAGCharacter>(GetOwner());
 
 	if (!IsValid(CharRef))
